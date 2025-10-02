@@ -621,12 +621,6 @@ const ManualEntry = () => {
       });
       
       // Don't navigate immediately, allow user to see undo option
-      setTimeout(() => {
-        if (lastTransactionId !== response.data.id) {
-          // Only navigate if user hasn't used undo
-          // navigate('/');
-        }
-      }, 3000);
     } catch (error) {
       toast.error('Failed to add transaction');
     } finally {
