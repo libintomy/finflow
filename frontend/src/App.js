@@ -761,6 +761,41 @@ const ManualEntry = () => {
           </form>
         </CardContent>
       </Card>
+
+      {/* Undo Section */}
+      {lastTransactionId && (
+        <Card className="border-amber-200 bg-amber-50">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-amber-800">Transaction Added Successfully!</p>
+                <p className="text-sm text-amber-600">Changed your mind? You can undo the last transaction.</p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate('/')}
+                  data-testid="view-dashboard-btn"
+                  className="border-amber-300 text-amber-700 hover:bg-amber-100"
+                >
+                  View Dashboard
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleUndo}
+                  disabled={undoLoading}
+                  data-testid="undo-transaction-btn"
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  {undoLoading ? 'Undoing...' : 'Undo'}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
