@@ -221,7 +221,7 @@ const Dashboard = () => {
             <div className={`text-2xl font-bold ${stats.net_balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               ₹{stats.net_balance.toLocaleString()}
             </div>
-            <p className="text-xs text-gray-500 mt-1">Income - Expenses</p>
+            <p className="text-xs text-gray-500 mt-1">{getSelectedMonthYear()}</p>
           </CardContent>
         </Card>
 
