@@ -830,6 +830,173 @@ const ManualEntry = () => {
   );
 };
 
+const ManageTransactions = () => {
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [deletingTransactionId, setDeletingTransactionId] = useState(null);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await axios.get(`${API}/transactions?limit=50`);
+      setTransactions(response.data);
+    } catch (error) {
+      toast.error('Failed to fetch transactions');
+      console.error('Fetch transactions error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteTransaction = async (transactionId, merchantName) => {
+    if (!window.confirm(`Are you sure you want to delete the transaction for ${merchantName}?`)) {
+      return;
+    }
+
+    setDeletingTransactionId(transactionId);
+    try {
+      await axios.delete(`${API}/transactions/${transactionId}`);
+      toast.success('Transaction deleted successfully!');
+      // Remove from local state
+      setTransactions(transactions.filter(t => t.id !== transactionId));
+    } catch (error) {
+      toast.error('Failed to delete transaction');
+      console.error('Delete transaction error:', error);
+    } finally {
+      setDeletingTransactionId(null);
+    }
+  };
+
+  const handleClearAllTransactions = async () => {
+    if (!window.confirm('Are you sure you want to delete ALL transactions? This action cannot be undone.')) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await axios.delete(`${API}/transactions/clear/all`);
+      toast.success('All transactions cleared successfully!');
+      setTransactions([]);
+    } catch (error) {
+      toast.error('Failed to clear all transactions');
+      console.error('Clear all transactions error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6" data-testid="manage-transactions">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Manage Transactions</h2>
+          <p className="text-gray-600">View, edit, and delete your transactions</p>
+        </div>
+        {transactions.length > 0 && (
+          <Button 
+            variant="destructive"
+            onClick={handleClearAllTransactions}
+            data-testid="clear-all-btn"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Clear All
+          </Button>
+        )}
+      </div>
+
+      {transactions.length === 0 ? (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <Receipt className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Transactions Found</h3>
+            <p className="text-gray-500 mb-6">Start by adding a transaction or parsing SMS messages.</p>
+            <div className="flex gap-3 justify-center">
+              <Link to="/add">
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Transaction
+                </Button>
+              </Link>
+              <Link to="/parse">
+                <Button variant="outline">
+                  <Smartphone className="h-4 w-4 mr-2" />
+                  Parse SMS
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>All Transactions ({transactions.length})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {transactions.map((transaction) => (
+                <div key={transaction.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-4 h-4 rounded-full ${
+                      transaction.category === 'personal' ? 'bg-emerald-500' : 
+                      transaction.category === 'official' ? 'bg-blue-500' : 
+                      'bg-amber-500'
+                    }`} />
+                    <div>
+                      <p className="font-medium">{transaction.merchant || 'Unknown Merchant'}</p>
+                      <p className="text-sm text-gray-500">{transaction.description}</p>
+                      <div className="flex gap-2 mt-1">
+                        <Badge variant="outline" className="text-xs">
+                          {transaction.category}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {transaction.payment_method}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <p className={`font-semibold text-lg ${transaction.transaction_type === 'debit' ? 'text-red-600' : 'text-green-600'}`}>
+                        {transaction.transaction_type === 'debit' ? '-' : '+'}₹{transaction.amount.toLocaleString()}
+                      </p>
+                      <p className="text-xs text-gray-500">{new Date(transaction.transaction_date).toLocaleDateString()}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteTransaction(transaction.id, transaction.merchant || 'Unknown Merchant')}
+                      disabled={deletingTransactionId === transaction.id}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
+                      data-testid={`delete-transaction-${transaction.id}`}
+                    >
+                      {deletingTransactionId === transaction.id ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-500"></div>
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+};
+
 const Navigation = () => {
   return (
     <nav className="bg-white shadow-sm border-b mb-8" data-testid="navigation">
@@ -854,6 +1021,11 @@ const Navigation = () => {
             <Link to="/add">
               <Button variant="ghost" size="sm" data-testid="add-transaction-nav-btn">
                 Add Transaction
+              </Button>
+            </Link>
+            <Link to="/manage">
+              <Button variant="ghost" size="sm" data-testid="manage-transactions-nav-btn">
+                Manage
               </Button>
             </Link>
           </div>
