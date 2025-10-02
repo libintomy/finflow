@@ -229,8 +229,8 @@ const Dashboard = () => {
             <TrendingUp className={`h-4 w-4 ${stats.net_balance >= 0 ? 'text-green-500' : 'text-red-500'}`} />
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${stats.net_balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              ₹{stats.net_balance.toLocaleString()}
+            <div className={`text-2xl font-bold ${(stats.net_balance || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              ₹{(stats.net_balance || 0).toLocaleString()}
             </div>
             <p className="text-xs text-gray-500 mt-1">{getSelectedMonthYear()}</p>
           </CardContent>
