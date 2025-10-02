@@ -51,6 +51,18 @@ const Dashboard = () => {
   const [savingsBreakdown, setSavingsBreakdown] = useState([]);
   const [deletingTransactionId, setDeletingTransactionId] = useState(null);
 
+  // Get current month and year for display
+  const getCurrentMonthYear = () => {
+    const now = new Date();
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+  };
+
+  const currentMonthYear = getCurrentMonthYear();
+
   useEffect(() => {
     fetchDashboardData();
   }, []);
