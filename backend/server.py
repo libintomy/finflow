@@ -458,10 +458,26 @@ async def get_monthly_trends():
     return results
 
 @api_router.get("/analytics/official-breakdown")
-async def get_official_breakdown():
+async def get_official_breakdown(month: int = None, year: int = None):
     """Get detailed breakdown of official expenses by merchant/type"""
+    
+    # Build match criteria
+    match_criteria = {"transaction_type": "debit", "category": "official"}
+    
+    if month is not None and year is not None:
+        start_of_month = datetime(year, month, 1, tzinfo=timezone.utc)
+        if month == 12:
+            end_of_month = datetime(year + 1, 1, 1, tzinfo=timezone.utc)
+        else:
+            end_of_month = datetime(year, month + 1, 1, tzinfo=timezone.utc)
+        
+        match_criteria["created_at"] = {
+            "$gte": start_of_month.isoformat(),
+            "$lt": end_of_month.isoformat()
+        }
+    
     pipeline = [
-        {"$match": {"transaction_type": "debit", "category": "official"}},
+        {"$match": match_criteria},
         {"$group": {"_id": "$merchant", "total": {"$sum": "$amount"}}},
         {"$sort": {"total": -1}},
         {"$limit": 10}
@@ -471,10 +487,26 @@ async def get_official_breakdown():
     return [{"merchant": result["_id"] or "Unknown", "amount": result["total"]} for result in results]
 
 @api_router.get("/analytics/personal-breakdown")
-async def get_personal_breakdown():
+async def get_personal_breakdown(month: int = None, year: int = None):
     """Get detailed breakdown of personal expenses by merchant/type"""
+    
+    # Build match criteria
+    match_criteria = {"transaction_type": "debit", "category": "personal"}
+    
+    if month is not None and year is not None:
+        start_of_month = datetime(year, month, 1, tzinfo=timezone.utc)
+        if month == 12:
+            end_of_month = datetime(year + 1, 1, 1, tzinfo=timezone.utc)
+        else:
+            end_of_month = datetime(year, month + 1, 1, tzinfo=timezone.utc)
+        
+        match_criteria["created_at"] = {
+            "$gte": start_of_month.isoformat(),
+            "$lt": end_of_month.isoformat()
+        }
+    
     pipeline = [
-        {"$match": {"transaction_type": "debit", "category": "personal"}},
+        {"$match": match_criteria},
         {"$group": {"_id": "$merchant", "total": {"$sum": "$amount"}}},
         {"$sort": {"total": -1}},
         {"$limit": 10}
@@ -484,10 +516,26 @@ async def get_personal_breakdown():
     return [{"merchant": result["_id"] or "Unknown", "amount": result["total"]} for result in results]
 
 @api_router.get("/analytics/savings-breakdown")
-async def get_savings_breakdown():
+async def get_savings_breakdown(month: int = None, year: int = None):
     """Get detailed breakdown of savings expenses by merchant/type"""
+    
+    # Build match criteria
+    match_criteria = {"transaction_type": "debit", "category": "savings"}
+    
+    if month is not None and year is not None:
+        start_of_month = datetime(year, month, 1, tzinfo=timezone.utc)
+        if month == 12:
+            end_of_month = datetime(year + 1, 1, 1, tzinfo=timezone.utc)
+        else:
+            end_of_month = datetime(year, month + 1, 1, tzinfo=timezone.utc)
+        
+        match_criteria["created_at"] = {
+            "$gte": start_of_month.isoformat(),
+            "$lt": end_of_month.isoformat()
+        }
+    
     pipeline = [
-        {"$match": {"transaction_type": "debit", "category": "savings"}},
+        {"$match": match_criteria},
         {"$group": {"_id": "$merchant", "total": {"$sum": "$amount"}}},
         {"$sort": {"total": -1}},
         {"$limit": 10}
