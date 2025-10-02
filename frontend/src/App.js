@@ -35,16 +35,19 @@ const Dashboard = () => {
   const [stats, setStats] = useState({
     total_personal: 0,
     total_official: 0,
+    total_savings: 0,
     total_expenses: 0,
     total_income: 0,
     monthly_personal: 0,
-    monthly_official: 0
+    monthly_official: 0,
+    monthly_savings: 0
   });
   const [categoryData, setCategoryData] = useState([]);
   const [monthlyTrends, setMonthlyTrends] = useState([]);
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [officialBreakdown, setOfficialBreakdown] = useState([]);
   const [personalBreakdown, setPersonalBreakdown] = useState([]);
+  const [savingsBreakdown, setSavingsBreakdown] = useState([]);
 
   useEffect(() => {
     fetchDashboardData();
