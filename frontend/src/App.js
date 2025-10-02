@@ -808,7 +808,7 @@ const ManualEntry = () => {
     <div className="max-w-md mx-auto space-y-6" data-testid="manual-entry">
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold">Add Transaction</h2>
-        <p className="text-gray-600">Manually add a new transaction</p>
+        <p className="text-gray-600">Adding transaction for <span className="font-semibold text-blue-600">{getSelectedMonthYear()}</span></p>
       </div>
 
       <Card>
