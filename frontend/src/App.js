@@ -152,34 +152,34 @@ const Dashboard = () => {
 
         <Card data-testid="personal-expenses-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Personal (Monthly)</CardTitle>
+            <CardTitle className="text-sm font-medium">Personal</CardTitle>
             <Wallet className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-emerald-600">₹{stats.monthly_personal.toLocaleString()}</div>
-            <p className="text-xs text-gray-500 mt-1">This month</p>
+            <p className="text-xs text-gray-500 mt-1">{currentMonthYear}</p>
           </CardContent>
         </Card>
 
         <Card data-testid="official-expenses-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Official (Monthly)</CardTitle>
+            <CardTitle className="text-sm font-medium">Official</CardTitle>
             <CreditCard className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">₹{stats.monthly_official.toLocaleString()}</div>
-            <p className="text-xs text-gray-500 mt-1">This month</p>
+            <p className="text-xs text-gray-500 mt-1">{currentMonthYear}</p>
           </CardContent>
         </Card>
 
         <Card data-testid="savings-expenses-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Savings (Monthly)</CardTitle>
+            <CardTitle className="text-sm font-medium">Savings</CardTitle>
             <TrendingUp className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-amber-600">₹{stats.monthly_savings.toLocaleString()}</div>
-            <p className="text-xs text-gray-500 mt-1">This month</p>
+            <p className="text-xs text-gray-500 mt-1">{currentMonthYear}</p>
           </CardContent>
         </Card>
       </div>
