@@ -397,7 +397,7 @@ const Dashboard = () => {
         <CardContent>
           <div className="space-y-3 max-h-80 overflow-y-auto">
             {recentTransactions.map((transaction) => (
-              <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
                 <div className="flex items-center gap-3">
                   <div className={`w-3 h-3 rounded-full ${
                     transaction.category === 'personal' ? 'bg-emerald-500' : 
@@ -409,13 +409,29 @@ const Dashboard = () => {
                     <p className="text-xs text-gray-500">{new Date(transaction.transaction_date).toLocaleDateString()}</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className={`font-semibold ${transaction.transaction_type === 'debit' ? 'text-red-600' : 'text-green-600'}`}>
-                    {transaction.transaction_type === 'debit' ? '-' : '+'}₹{transaction.amount.toLocaleString()}
-                  </p>
-                  <Badge variant="outline" className="text-xs">
-                    {transaction.category}
-                  </Badge>
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <p className={`font-semibold ${transaction.transaction_type === 'debit' ? 'text-red-600' : 'text-green-600'}`}>
+                      {transaction.transaction_type === 'debit' ? '-' : '+'}₹{transaction.amount.toLocaleString()}
+                    </p>
+                    <Badge variant="outline" className="text-xs">
+                      {transaction.category}
+                    </Badge>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeleteTransaction(transaction.id, transaction.merchant || 'Unknown Merchant')}
+                    disabled={deletingTransactionId === transaction.id}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1 h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                    data-testid={`delete-transaction-${transaction.id}`}
+                  >
+                    {deletingTransactionId === transaction.id ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-500"></div>
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
+                  </Button>
                 </div>
               </div>
             ))}
