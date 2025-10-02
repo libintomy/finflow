@@ -1045,6 +1045,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/parse" element={<SMSParser />} />
             <Route path="/add" element={<ManualEntry />} />
+            <Route path="/manage" element={<ManageTransactions />} />
           </Routes>
         </div>
       </BrowserRouter>
