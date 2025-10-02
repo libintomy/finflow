@@ -163,16 +163,16 @@ const Dashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
                   data={officialBreakdown}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ merchant, percent }) => percent > 10 ? `${merchant} ${(percent * 100).toFixed(0)}%` : ''}
-                  outerRadius={70}
-                  innerRadius={40}
+                  label={({ percent }) => percent > 15 ? `${(percent * 100).toFixed(0)}%` : ''}
+                  outerRadius={60}
+                  innerRadius={35}
                   fill="#3B82F6"
                   dataKey="amount"
                 >
@@ -181,8 +181,26 @@ const Dashboard = () => {
                   ))}
                 </Pie>
                 <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, 'Amount']} />
+                <Legend 
+                  verticalAlign="bottom" 
+                  height={36}
+                  formatter={(value) => value.length > 15 ? value.substring(0, 15) + '...' : value}
+                />
               </PieChart>
             </ResponsiveContainer>
+            {/* Custom Legend for better control */}
+            <div className="mt-2 space-y-1 max-h-20 overflow-y-auto">
+              {officialBreakdown.slice(0, 5).map((item, index) => (
+                <div key={index} className="flex items-center gap-2 text-xs">
+                  <div 
+                    className="w-3 h-3 rounded-sm" 
+                    style={{ backgroundColor: `hsl(${210 + index * 30}, 70%, ${60 - index * 5}%)` }}
+                  />
+                  <span className="truncate flex-1">{item.merchant}</span>
+                  <span className="font-medium">₹{item.amount.toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
             {officialBreakdown.length === 0 && (
               <p className="text-center text-gray-500 py-8 text-sm">No official expenses</p>
             )}
