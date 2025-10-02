@@ -71,10 +71,12 @@ class SMSParseRequest(BaseModel):
 class DashboardStats(BaseModel):
     total_personal: float
     total_official: float
+    total_savings: float
     total_expenses: float
     total_income: float
     monthly_personal: float
     monthly_official: float
+    monthly_savings: float
 
 # SMS Parsing Logic
 class SMSParser:
