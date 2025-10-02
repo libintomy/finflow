@@ -406,6 +406,11 @@ const Dashboard = () => {
                   }`} />
                   <div>
                     <p className="font-medium text-sm">{transaction.merchant || 'Unknown Merchant'}</p>
+                    {transaction.description && (
+                      <p className="text-xs text-gray-600 max-w-48 truncate" title={transaction.description}>
+                        {transaction.description}
+                      </p>
+                    )}
                     <p className="text-xs text-gray-500">{new Date(transaction.transaction_date).toLocaleDateString()}</p>
                   </div>
                 </div>
