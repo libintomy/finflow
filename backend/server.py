@@ -75,9 +75,8 @@ class DashboardStats(BaseModel):
     total_expenses: float
     total_income: float
     net_balance: float
-    monthly_personal: float
-    monthly_official: float
-    monthly_savings: float
+    selected_month: int
+    selected_year: int
 
 # SMS Parsing Logic
 class SMSParser:
