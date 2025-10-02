@@ -126,11 +126,65 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6" data-testid="dashboard">
-      {/* Month Indicator */}
-      <div className="text-center">
+      {/* Month Selector */}
+      <div className="text-center space-y-4">
         <h2 className="text-2xl font-bold text-gray-900">Financial Dashboard</h2>
-        <p className="text-gray-600 mt-1">
-          Monthly data for <span className="font-semibold text-blue-600">{currentMonthYear}</span>
+        <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center gap-2">
+            <Label htmlFor="month-select" className="text-sm font-medium">Month:</Label>
+            <Select 
+              value={selectedMonth.toString()}
+              onValueChange={(value) => setSelectedMonth(parseInt(value))}
+            >
+              <SelectTrigger className="w-32" id="month-select" data-testid="month-select">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {getMonthNames().map((month, index) => (
+                  <SelectItem key={index + 1} value={(index + 1).toString()}>
+                    {month}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Label htmlFor="year-select" className="text-sm font-medium">Year:</Label>
+            <Select 
+              value={selectedYear.toString()}
+              onValueChange={(value) => setSelectedYear(parseInt(value))}
+            >
+              <SelectTrigger className="w-24" id="year-select" data-testid="year-select">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {getAvailableYears().map((year) => (
+                  <SelectItem key={year} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const now = new Date();
+              setSelectedMonth(now.getMonth() + 1);
+              setSelectedYear(now.getFullYear());
+            }}
+            data-testid="current-month-btn"
+            className="text-blue-600 border-blue-200 hover:bg-blue-50"
+          >
+            Current Month
+          </Button>
+        </div>
+        
+        <p className="text-gray-600">
+          Viewing data for <span className="font-semibold text-blue-600">{getSelectedMonthYear()}</span>
         </p>
       </div>
 
