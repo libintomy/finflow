@@ -39,9 +39,8 @@ const Dashboard = () => {
     total_expenses: 0,
     total_income: 0,
     net_balance: 0,
-    monthly_personal: 0,
-    monthly_official: 0,
-    monthly_savings: 0
+    selected_month: new Date().getMonth() + 1,
+    selected_year: new Date().getFullYear()
   });
   const [categoryData, setCategoryData] = useState([]);
   const [monthlyTrends, setMonthlyTrends] = useState([]);
