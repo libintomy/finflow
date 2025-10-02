@@ -254,8 +254,17 @@ async def root():
 async def create_transaction(transaction_data: TransactionCreate):
     """Create a new transaction manually"""
     transaction_dict = transaction_data.dict()
+    
+    # Use provided transaction_date or default to current time
     if transaction_dict.get('transaction_date') is None:
         transaction_dict['transaction_date'] = datetime.now(timezone.utc)
+    else:
+        # Parse the provided date string
+        if isinstance(transaction_dict['transaction_date'], str):
+            transaction_dict['transaction_date'] = datetime.fromisoformat(transaction_dict['transaction_date'].replace('Z', '+00:00'))
+    
+    # Set created_at to match transaction_date for consistency
+    transaction_dict['created_at'] = transaction_dict['transaction_date']
     
     transaction = Transaction(**transaction_dict)
     transaction_mongo = prepare_for_mongo(transaction.dict())
