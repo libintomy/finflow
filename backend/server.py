@@ -409,10 +409,26 @@ async def get_dashboard_stats(month: int = None, year: int = None):
     return stats
 
 @api_router.get("/analytics/category-distribution")
-async def get_category_distribution():
+async def get_category_distribution(month: int = None, year: int = None):
     """Get expense distribution by category for pie chart"""
+    
+    # Build match criteria
+    match_criteria = {"transaction_type": "debit"}
+    
+    if month is not None and year is not None:
+        start_of_month = datetime(year, month, 1, tzinfo=timezone.utc)
+        if month == 12:
+            end_of_month = datetime(year + 1, 1, 1, tzinfo=timezone.utc)
+        else:
+            end_of_month = datetime(year, month + 1, 1, tzinfo=timezone.utc)
+        
+        match_criteria["created_at"] = {
+            "$gte": start_of_month.isoformat(),
+            "$lt": end_of_month.isoformat()
+        }
+    
     pipeline = [
-        {"$match": {"transaction_type": "debit"}},
+        {"$match": match_criteria},
         {"$group": {"_id": "$category", "total": {"$sum": "$amount"}}},
         {"$sort": {"total": -1}}
     ]
