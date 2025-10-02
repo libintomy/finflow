@@ -321,12 +321,22 @@ async def parse_sms_bulk(file: UploadFile = File(...)):
     }
 
 @api_router.get("/dashboard/stats")
-async def get_dashboard_stats():
-    """Get dashboard statistics"""
+async def get_dashboard_stats(month: int = None, year: int = None):
+    """Get dashboard statistics for a specific month/year or current month"""
     
-    # Get current month boundaries
+    # Default to current month if not specified
     now = datetime.now(timezone.utc)
-    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    target_month = month if month is not None else now.month
+    target_year = year if year is not None else now.year
+    
+    # Get month boundaries
+    start_of_month = datetime(target_year, target_month, 1, tzinfo=timezone.utc)
+    
+    # Calculate end of month
+    if target_month == 12:
+        end_of_month = datetime(target_year + 1, 1, 1, tzinfo=timezone.utc)
+    else:
+        end_of_month = datetime(target_year, target_month + 1, 1, tzinfo=timezone.utc)
     
     # Aggregate total by category
     pipeline_total = [
