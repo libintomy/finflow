@@ -356,6 +356,7 @@ async def get_dashboard_stats():
         "total_savings": 0,
         "total_expenses": 0,
         "total_income": 0,
+        "net_balance": 0,
         "monthly_personal": 0,
         "monthly_official": 0,
         "monthly_savings": 0
@@ -386,6 +387,9 @@ async def get_dashboard_stats():
             stats["monthly_official"] = monthly_debit
         elif category == "savings":
             stats["monthly_savings"] = monthly_debit
+    
+    # Calculate net balance (Income - Expenses)
+    stats["net_balance"] = stats["total_income"] - stats["total_expenses"]
     
     return stats
 
