@@ -74,6 +74,7 @@ class DashboardStats(BaseModel):
     total_savings: float
     total_expenses: float
     total_income: float
+    net_balance: float
     monthly_personal: float
     monthly_official: float
     monthly_savings: float
