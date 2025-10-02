@@ -27,7 +27,8 @@ const API = `${BACKEND_URL}/api`;
 // Color scheme for charts
 const COLORS = {
   personal: '#10B981', // emerald-500
-  official: '#3B82F6'  // blue-500
+  official: '#3B82F6', // blue-500
+  savings: '#F59E0B'   // amber-500
 };
 
 const Dashboard = () => {
