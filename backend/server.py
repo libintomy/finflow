@@ -447,6 +447,19 @@ async def get_personal_breakdown():
     results = await db.transactions.aggregate(pipeline).to_list(length=None)
     return [{"merchant": result["_id"] or "Unknown", "amount": result["total"]} for result in results]
 
+@api_router.get("/analytics/savings-breakdown")
+async def get_savings_breakdown():
+    """Get detailed breakdown of savings expenses by merchant/type"""
+    pipeline = [
+        {"$match": {"transaction_type": "debit", "category": "savings"}},
+        {"$group": {"_id": "$merchant", "total": {"$sum": "$amount"}}},
+        {"$sort": {"total": -1}},
+        {"$limit": 10}
+    ]
+    
+    results = await db.transactions.aggregate(pipeline).to_list(length=None)
+    return [{"merchant": result["_id"] or "Unknown", "amount": result["total"]} for result in results]
+
 @api_router.delete("/transactions/{transaction_id}")
 async def delete_transaction(transaction_id: str):
     """Delete a transaction"""
