@@ -49,6 +49,7 @@ const Dashboard = () => {
   const [officialBreakdown, setOfficialBreakdown] = useState([]);
   const [personalBreakdown, setPersonalBreakdown] = useState([]);
   const [savingsBreakdown, setSavingsBreakdown] = useState([]);
+  const [deletingTransactionId, setDeletingTransactionId] = useState(null);
 
   useEffect(() => {
     fetchDashboardData();
