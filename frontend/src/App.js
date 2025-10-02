@@ -81,14 +81,15 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
+      const monthParam = `?month=${selectedMonth}&year=${selectedYear}`;
       const [statsRes, categoryRes, trendsRes, transactionsRes, officialRes, personalRes, savingsRes] = await Promise.all([
-        axios.get(`${API}/dashboard/stats`),
-        axios.get(`${API}/analytics/category-distribution`),
+        axios.get(`${API}/dashboard/stats${monthParam}`),
+        axios.get(`${API}/analytics/category-distribution${monthParam}`),
         axios.get(`${API}/analytics/monthly-trends`),
         axios.get(`${API}/transactions?limit=10`),
-        axios.get(`${API}/analytics/official-breakdown`),
-        axios.get(`${API}/analytics/personal-breakdown`),
-        axios.get(`${API}/analytics/savings-breakdown`)
+        axios.get(`${API}/analytics/official-breakdown${monthParam}`),
+        axios.get(`${API}/analytics/personal-breakdown${monthParam}`),
+        axios.get(`${API}/analytics/savings-breakdown${monthParam}`)
       ]);
 
       setStats(statsRes.data);
