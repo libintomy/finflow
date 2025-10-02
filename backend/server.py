@@ -400,6 +400,32 @@ async def get_monthly_trends():
     results = await db.transactions.aggregate(pipeline).to_list(length=None)
     return results
 
+@api_router.get("/analytics/official-breakdown")
+async def get_official_breakdown():
+    """Get detailed breakdown of official expenses by merchant/type"""
+    pipeline = [
+        {"$match": {"transaction_type": "debit", "category": "official"}},
+        {"$group": {"_id": "$merchant", "total": {"$sum": "$amount"}}},
+        {"$sort": {"total": -1}},
+        {"$limit": 10}
+    ]
+    
+    results = await db.transactions.aggregate(pipeline).to_list(length=None)
+    return [{"merchant": result["_id"] or "Unknown", "amount": result["total"]} for result in results]
+
+@api_router.get("/analytics/personal-breakdown")
+async def get_personal_breakdown():
+    """Get detailed breakdown of personal expenses by merchant/type"""
+    pipeline = [
+        {"$match": {"transaction_type": "debit", "category": "personal"}},
+        {"$group": {"_id": "$merchant", "total": {"$sum": "$amount"}}},
+        {"$sort": {"total": -1}},
+        {"$limit": 10}
+    ]
+    
+    results = await db.transactions.aggregate(pipeline).to_list(length=None)
+    return [{"merchant": result["_id"] or "Unknown", "amount": result["total"]} for result in results]
+
 @api_router.delete("/transactions/{transaction_id}")
 async def delete_transaction(transaction_id: str):
     """Delete a transaction"""
