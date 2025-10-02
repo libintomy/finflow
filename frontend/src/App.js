@@ -253,7 +253,7 @@ const Dashboard = () => {
             <CreditCard className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">₹{stats.monthly_official.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-blue-600">₹{(stats.total_official || 0).toLocaleString()}</div>
             <p className="text-xs text-gray-500 mt-1">{getSelectedMonthYear()}</p>
           </CardContent>
         </Card>
