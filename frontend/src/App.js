@@ -577,7 +577,11 @@ const SMSParser = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API}/parse-sms`, { sms_text: smsText });
+      const response = await axios.post(`${API}/parse-sms`, { 
+        sms_text: smsText,
+        target_month: selectedMonth,
+        target_year: selectedYear
+      });
       toast.success('SMS parsed successfully!');
       setSmsText('');
       navigate('/');
