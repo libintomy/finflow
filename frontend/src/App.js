@@ -86,7 +86,7 @@ const Dashboard = () => {
         axios.get(`${API}/dashboard/stats${monthParam}`),
         axios.get(`${API}/analytics/category-distribution${monthParam}`),
         axios.get(`${API}/analytics/monthly-trends`),
-        axios.get(`${API}/transactions?limit=10`),
+        axios.get(`${API}/transactions?limit=10&month=${selectedMonth}&year=${selectedYear}`),
         axios.get(`${API}/analytics/official-breakdown${monthParam}`),
         axios.get(`${API}/analytics/personal-breakdown${monthParam}`),
         axios.get(`${API}/analytics/savings-breakdown${monthParam}`)
