@@ -957,15 +957,22 @@ const ManageTransactions = () => {
                       transaction.category === 'official' ? 'bg-blue-500' : 
                       'bg-amber-500'
                     }`} />
-                    <div>
+                    <div className="flex-1">
                       <p className="font-medium">{transaction.merchant || 'Unknown Merchant'}</p>
-                      <p className="text-sm text-gray-500">{transaction.description}</p>
-                      <div className="flex gap-2 mt-1">
+                      {transaction.description && (
+                        <p className="text-sm text-gray-700 mt-1 bg-gray-100 px-2 py-1 rounded text-wrap">
+                          "{transaction.description}"
+                        </p>
+                      )}
+                      <div className="flex gap-2 mt-2">
                         <Badge variant="outline" className="text-xs">
                           {transaction.category}
                         </Badge>
                         <Badge variant="outline" className="text-xs">
                           {transaction.payment_method}
+                        </Badge>
+                        <Badge variant="secondary" className="text-xs">
+                          {new Date(transaction.transaction_date).toLocaleDateString()}
                         </Badge>
                       </div>
                     </div>
