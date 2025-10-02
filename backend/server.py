@@ -35,6 +35,7 @@ class TransactionType(str, Enum):
 class CategoryType(str, Enum):
     PERSONAL = "personal"
     OFFICIAL = "official"
+    SAVINGS = "savings"
 
 class PaymentMethod(str, Enum):
     GPAY = "gpay"
