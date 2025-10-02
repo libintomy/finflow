@@ -512,20 +512,31 @@ const SMSParser = () => {
       {/* Sample SMS Formats */}
       <Card>
         <CardHeader>
-          <CardTitle>Sample SMS Formats</CardTitle>
+          <CardTitle>Sample SMS Formats & Auto-Categorization</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <p className="font-medium text-sm mb-1">GPay Sample:</p>
+            <p className="font-medium text-sm mb-1">Official (OL keyword):</p>
             <code className="text-xs bg-gray-100 p-2 rounded block">
-              You paid ₹500 to Swiggy using Google Pay. UPI transaction ID 123456789 on 15-Sep-24.
+              You paid ₹500 to Swiggy OL food delivery using Google Pay. UPI transaction ID 123456789 on 15-Sep-24.
             </code>
           </div>
           <div>
-            <p className="font-medium text-sm mb-1">PhonePe Sample:</p>
+            <p className="font-medium text-sm mb-1">Personal (PL keyword):</p>
             <code className="text-xs bg-gray-100 p-2 rounded block">
-              You have successfully paid Rs.250 to Uber via PhonePe. Txn ID: PE12345 on 15-Sep-24.
+              You have successfully paid Rs.250 to Netflix PL entertainment via PhonePe. Txn ID: PE12345 on 15-Sep-24.
             </code>
+          </div>
+          <div>
+            <p className="font-medium text-sm mb-1">Savings (SV keyword):</p>
+            <code className="text-xs bg-gray-100 p-2 rounded block">
+              You paid ₹5000 to SBI SV Mutual Fund SIP using Google Pay. UPI transaction ID 111222333 on 17-Sep-24.
+            </code>
+          </div>
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>Auto-Categorization:</strong> Add <code className="bg-white px-1 rounded">OL</code>, <code className="bg-white px-1 rounded">PL</code>, or <code className="bg-white px-1 rounded">SV</code> keywords in merchant/description for automatic categorization into Official, Personal, or Savings respectively.
+            </p>
           </div>
         </CardContent>
       </Card>
