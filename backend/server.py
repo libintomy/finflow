@@ -338,8 +338,14 @@ async def get_dashboard_stats(month: int = None, year: int = None):
     else:
         end_of_month = datetime(target_year, target_month + 1, 1, tzinfo=timezone.utc)
     
-    # Aggregate total by category
+    # Aggregate total by category (for the selected month only)
     pipeline_total = [
+        {"$match": {
+            "created_at": {
+                "$gte": start_of_month.isoformat(),
+                "$lt": end_of_month.isoformat()
+            }
+        }},
         {"$group": {
             "_id": "$category",
             "total_debit": {"$sum": {"$cond": [{"$eq": ["$transaction_type", "debit"]}, "$amount", 0]}},
