@@ -926,7 +926,7 @@ const ManageTransactions = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Manage Transactions</h2>
-          <p className="text-gray-600">View, edit, and delete your transactions</p>
+          <p className="text-gray-600">View, edit, and delete your transactions • All time data</p>
         </div>
         {transactions.length > 0 && (
           <Button 
