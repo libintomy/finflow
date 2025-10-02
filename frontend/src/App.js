@@ -756,9 +756,13 @@ const ManualEntry = () => {
 
     setLoading(true);
     try {
+      // Create transaction date for the selected month/year
+      const transactionDate = new Date(selectedYear, selectedMonth - 1, 15); // 15th of selected month
+      
       const response = await axios.post(`${API}/transactions`, {
         ...formData,
-        amount: parseFloat(formData.amount)
+        amount: parseFloat(formData.amount),
+        transaction_date: transactionDate.toISOString()
       });
       
       // Store the transaction ID for undo functionality
