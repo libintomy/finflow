@@ -1,0 +1,2 @@
+# finflow
+finance management app
