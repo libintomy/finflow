@@ -521,7 +521,7 @@ const Dashboard = () => {
                 <div className="flex items-center gap-3">
                   <div className="text-right">
                     <p className={`font-semibold ${transaction.transaction_type === 'debit' ? 'text-red-600' : 'text-green-600'}`}>
-                      {transaction.transaction_type === 'debit' ? '-' : '+'}₹{transaction.amount.toLocaleString()}
+                      {transaction.transaction_type === 'debit' ? '-' : '+'}₹{(transaction.amount || 0).toLocaleString()}
                     </p>
                     <Badge variant="outline" className="text-xs">
                       {transaction.category}
@@ -1084,7 +1084,7 @@ const ManageTransactions = () => {
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <p className={`font-semibold text-lg ${transaction.transaction_type === 'debit' ? 'text-red-600' : 'text-green-600'}`}>
-                        {transaction.transaction_type === 'debit' ? '-' : '+'}₹{transaction.amount.toLocaleString()}
+                        {transaction.transaction_type === 'debit' ? '-' : '+'}₹{(transaction.amount || 0).toLocaleString()}
                       </p>
                       <p className="text-xs text-gray-500">{new Date(transaction.transaction_date).toLocaleDateString()}</p>
                     </div>
