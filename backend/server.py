@@ -84,6 +84,13 @@ class SMSParser:
         """Auto-categorize based on keywords in description/merchant"""
         text_to_analyze = f"{description} {merchant}".lower()
         
+        # Savings keywords (highest priority)
+        savings_keywords = [
+            'sv', 'savings', 'investment', 'mutual fund', 'sip', 'fd', 'fixed deposit',
+            'recurring deposit', 'rd', 'ppf', 'nps', 'elss', 'equity', 'bond',
+            'insurance premium', 'life insurance', 'term insurance', 'lic'
+        ]
+        
         # Official keywords
         official_keywords = [
             'ol', 'office', 'work', 'meeting', 'conference', 'business', 
@@ -98,7 +105,12 @@ class SMSParser:
             'family', 'friend', 'gift', 'clothing', 'fitness', 'gym'
         ]
         
-        # Check official first
+        # Check savings first (highest priority)
+        for keyword in savings_keywords:
+            if keyword in text_to_analyze:
+                return CategoryType.SAVINGS
+        
+        # Check official
         for keyword in official_keywords:
             if keyword in text_to_analyze:
                 return CategoryType.OFFICIAL
