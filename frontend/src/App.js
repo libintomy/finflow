@@ -170,7 +170,7 @@ const Dashboard = () => {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ category, percent }) => percent > 8 ? `${category} ${(percent * 100).toFixed(0)}%` : ''}
+                  label={({ percent }) => percent > 8 ? `${(percent * 100).toFixed(0)}%` : ''}
                   outerRadius={60}
                   fill="#8884d8"
                   dataKey="amount"
@@ -180,8 +180,29 @@ const Dashboard = () => {
                   ))}
                 </Pie>
                 <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, 'Amount']} />
+                <Legend 
+                  verticalAlign="bottom" 
+                  height={36}
+                  formatter={(value) => value.charAt(0).toUpperCase() + value.slice(1)}
+                />
               </PieChart>
             </ResponsiveContainer>
+            {/* Custom Legend for better control */}
+            <div className="mt-2 space-y-1">
+              {categoryData.map((item, index) => (
+                <div key={index} className="flex items-center gap-2 text-xs">
+                  <div 
+                    className="w-3 h-3 rounded-sm" 
+                    style={{ backgroundColor: COLORS[item.category] || '#8884d8' }}
+                  />
+                  <span className="capitalize flex-1">{item.category}</span>
+                  <span className="font-medium">₹{item.amount.toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+            {categoryData.length === 0 && (
+              <p className="text-center text-gray-500 py-8 text-sm">No expenses recorded</p>
+            )}
           </CardContent>
         </Card>
 
