@@ -344,7 +344,11 @@ const Dashboard = () => {
             {recentTransactions.map((transaction) => (
               <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className={`w-3 h-3 rounded-full ${transaction.category === 'personal' ? 'bg-emerald-500' : 'bg-blue-500'}`} />
+                  <div className={`w-3 h-3 rounded-full ${
+                    transaction.category === 'personal' ? 'bg-emerald-500' : 
+                    transaction.category === 'official' ? 'bg-blue-500' : 
+                    'bg-amber-500'
+                  }`} />
                   <div>
                     <p className="font-medium text-sm">{transaction.merchant || 'Unknown Merchant'}</p>
                     <p className="text-xs text-gray-500">{new Date(transaction.transaction_date).toLocaleDateString()}</p>
