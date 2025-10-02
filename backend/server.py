@@ -349,7 +349,12 @@ async def get_dashboard_stats(month: int = None, year: int = None):
     
     # Aggregate monthly by category
     pipeline_monthly = [
-        {"$match": {"created_at": {"$gte": start_of_month.isoformat()}}},
+        {"$match": {
+            "created_at": {
+                "$gte": start_of_month.isoformat(),
+                "$lt": end_of_month.isoformat()
+            }
+        }},
         {"$group": {
             "_id": "$category", 
             "monthly_debit": {"$sum": {"$cond": [{"$eq": ["$transaction_type", "debit"]}, "$amount", 0]}}
