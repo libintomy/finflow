@@ -473,6 +473,16 @@ async def delete_transaction(transaction_id: str):
         raise HTTPException(status_code=404, detail="Transaction not found")
     return {"success": True, "message": "Transaction deleted successfully"}
 
+@api_router.delete("/transactions/clear/all")
+async def clear_all_transactions():
+    """Clear all transactions - fresh start"""
+    result = await db.transactions.delete_many({})
+    return {
+        "success": True, 
+        "message": f"Cleared {result.deleted_count} transactions successfully",
+        "deleted_count": result.deleted_count
+    }
+
 # Include the router in the main app
 app.include_router(api_router)
 
