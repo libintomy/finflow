@@ -113,6 +113,14 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6" data-testid="dashboard">
+      {/* Month Indicator */}
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-gray-900">Financial Dashboard</h2>
+        <p className="text-gray-600 mt-1">
+          Monthly data for <span className="font-semibold text-blue-600">{currentMonthYear}</span>
+        </p>
+      </div>
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
         <Card data-testid="total-income-card">
