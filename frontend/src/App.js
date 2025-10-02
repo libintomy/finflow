@@ -77,7 +77,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [selectedMonth, selectedYear]);
 
   const fetchDashboardData = async () => {
     try {
