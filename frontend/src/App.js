@@ -197,7 +197,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">₹{stats.total_income.toLocaleString()}</div>
-            <p className="text-xs text-gray-500 mt-1">All time earnings</p>
+            <p className="text-xs text-gray-500 mt-1">{getSelectedMonthYear()}</p>
           </CardContent>
         </Card>
 
@@ -208,7 +208,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">₹{stats.total_expenses.toLocaleString()}</div>
-            <p className="text-xs text-gray-500 mt-1">All time spending</p>
+            <p className="text-xs text-gray-500 mt-1">{getSelectedMonthYear()}</p>
           </CardContent>
         </Card>
 
