@@ -17,7 +17,7 @@ import {
 } from 'recharts';
 import { 
   Wallet, TrendingUp, TrendingDown, Upload, Plus, 
-  CreditCard, Smartphone, Receipt, BarChart3 
+  CreditCard, Smartphone, Receipt, BarChart3, Trash2, X
 } from 'lucide-react';
 import './App.css';
 
