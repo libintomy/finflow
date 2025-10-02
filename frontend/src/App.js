@@ -91,13 +91,25 @@ const Dashboard = () => {
         axios.get(`${API}/analytics/savings-breakdown${monthParam}`)
       ]);
 
-      setStats(statsRes.data);
-      setCategoryData(categoryRes.data);
-      setMonthlyTrends(trendsRes.data);
-      setRecentTransactions(transactionsRes.data);
-      setOfficialBreakdown(officialRes.data);
-      setPersonalBreakdown(personalRes.data);
-      setSavingsBreakdown(savingsRes.data);
+      // Ensure all stats have default values
+      const safeStats = {
+        total_personal: statsRes.data.total_personal || 0,
+        total_official: statsRes.data.total_official || 0,
+        total_savings: statsRes.data.total_savings || 0,
+        total_expenses: statsRes.data.total_expenses || 0,
+        total_income: statsRes.data.total_income || 0,
+        net_balance: statsRes.data.net_balance || 0,
+        selected_month: statsRes.data.selected_month || selectedMonth,
+        selected_year: statsRes.data.selected_year || selectedYear
+      };
+      
+      setStats(safeStats);
+      setCategoryData(categoryRes.data || []);
+      setMonthlyTrends(trendsRes.data || []);
+      setRecentTransactions(transactionsRes.data || []);
+      setOfficialBreakdown(officialRes.data || []);
+      setPersonalBreakdown(personalRes.data || []);
+      setSavingsBreakdown(savingsRes.data || []);
     } catch (error) {
       toast.error('Failed to fetch dashboard data');
       console.error('Dashboard fetch error:', error);
