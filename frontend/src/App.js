@@ -42,6 +42,8 @@ const Dashboard = () => {
   const [categoryData, setCategoryData] = useState([]);
   const [monthlyTrends, setMonthlyTrends] = useState([]);
   const [recentTransactions, setRecentTransactions] = useState([]);
+  const [officialBreakdown, setOfficialBreakdown] = useState([]);
+  const [personalBreakdown, setPersonalBreakdown] = useState([]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -49,17 +51,21 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const [statsRes, categoryRes, trendsRes, transactionsRes] = await Promise.all([
+      const [statsRes, categoryRes, trendsRes, transactionsRes, officialRes, personalRes] = await Promise.all([
         axios.get(`${API}/dashboard/stats`),
         axios.get(`${API}/analytics/category-distribution`),
         axios.get(`${API}/analytics/monthly-trends`),
-        axios.get(`${API}/transactions?limit=10`)
+        axios.get(`${API}/transactions?limit=10`),
+        axios.get(`${API}/analytics/official-breakdown`),
+        axios.get(`${API}/analytics/personal-breakdown`)
       ]);
 
       setStats(statsRes.data);
       setCategoryData(categoryRes.data);
       setMonthlyTrends(trendsRes.data);
       setRecentTransactions(transactionsRes.data);
+      setOfficialBreakdown(officialRes.data);
+      setPersonalBreakdown(personalRes.data);
     } catch (error) {
       toast.error('Failed to fetch dashboard data');
       console.error('Dashboard fetch error:', error);
