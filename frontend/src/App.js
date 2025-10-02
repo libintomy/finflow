@@ -627,6 +627,7 @@ const ManualEntry = () => {
                 <SelectContent>
                   <SelectItem value="personal">Personal</SelectItem>
                   <SelectItem value="official">Official</SelectItem>
+                  <SelectItem value="savings">Savings</SelectItem>
                 </SelectContent>
               </Select>
             </div>
