@@ -554,10 +554,20 @@ const Dashboard = () => {
 };
 
 const SMSParser = () => {
+  const { selectedMonth, selectedYear } = useContext(MonthYearContext);
   const [smsText, setSmsText] = useState('');
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Helper to get month name
+  const getSelectedMonthYear = () => {
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return `${monthNames[selectedMonth - 1]} ${selectedYear}`;
+  };
 
   const handleSingleSMSParse = async () => {
     if (!smsText.trim()) {
