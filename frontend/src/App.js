@@ -50,18 +50,30 @@ const Dashboard = () => {
   const [personalBreakdown, setPersonalBreakdown] = useState([]);
   const [savingsBreakdown, setSavingsBreakdown] = useState([]);
   const [deletingTransactionId, setDeletingTransactionId] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // 1-based
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
-  // Get current month and year for display
-  const getCurrentMonthYear = () => {
-    const now = new Date();
-    const monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    return `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+  // Get month names
+  const getMonthNames = () => [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  // Get available years (current year and past years with transactions)
+  const getAvailableYears = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let year = currentYear; year >= currentYear - 5; year--) {
+      years.push(year);
+    }
+    return years;
   };
 
-  const currentMonthYear = getCurrentMonthYear();
+  // Format selected month/year for display
+  const getSelectedMonthYear = () => {
+    const monthNames = getMonthNames();
+    return `${monthNames[selectedMonth - 1]} ${selectedYear}`;
+  };
 
   useEffect(() => {
     fetchDashboardData();
