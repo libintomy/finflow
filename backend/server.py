@@ -1,15 +1,17 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File
+from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import re
 from pathlib import Path
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional, Dict, Any
 import uuid
-from datetime import datetime
-
+from datetime import datetime, timezone
+from enum import Enum
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -25,32 +27,386 @@ app = FastAPI()
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# Enums
+class TransactionType(str, Enum):
+    DEBIT = "debit"
+    CREDIT = "credit"
 
-# Define Models
-class StatusCheck(BaseModel):
+class CategoryType(str, Enum):
+    PERSONAL = "personal"
+    OFFICIAL = "official"
+
+class PaymentMethod(str, Enum):
+    GPAY = "gpay"
+    PHONEPE = "phonepe"
+    MANUAL = "manual"
+    UPI = "upi"
+
+# Models
+class Transaction(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    amount: float
+    transaction_type: TransactionType
+    category: CategoryType
+    payment_method: PaymentMethod
+    merchant: Optional[str] = None
+    description: Optional[str] = None
+    transaction_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    upi_transaction_id: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
+class TransactionCreate(BaseModel):
+    amount: float
+    transaction_type: TransactionType
+    category: CategoryType
+    payment_method: PaymentMethod
+    merchant: Optional[str] = None
+    description: Optional[str] = None
+    transaction_date: Optional[datetime] = None
 
-# Add your routes to the router instead of directly to app
+class SMSParseRequest(BaseModel):
+    sms_text: str
+
+class DashboardStats(BaseModel):
+    total_personal: float
+    total_official: float
+    total_expenses: float
+    total_income: float
+    monthly_personal: float
+    monthly_official: float
+
+# SMS Parsing Logic
+class SMSParser:
+    
+    @staticmethod
+    def categorize_transaction(description: str, merchant: str = "") -> CategoryType:
+        """Auto-categorize based on keywords in description/merchant"""
+        text_to_analyze = f"{description} {merchant}".lower()
+        
+        # Official keywords
+        official_keywords = [
+            'ol', 'office', 'work', 'meeting', 'conference', 'business', 
+            'client', 'project', 'travel', 'hotel', 'flight', 'uber', 
+            'ola', 'rapido', 'petrol', 'fuel', 'stationary', 'equipment'
+        ]
+        
+        # Personal keywords  
+        personal_keywords = [
+            'pl', 'personal', 'food', 'restaurant', 'grocery', 'shopping',
+            'medical', 'pharmacy', 'entertainment', 'movie', 'game', 
+            'family', 'friend', 'gift', 'clothing', 'fitness', 'gym'
+        ]
+        
+        # Check official first
+        for keyword in official_keywords:
+            if keyword in text_to_analyze:
+                return CategoryType.OFFICIAL
+                
+        # Check personal  
+        for keyword in personal_keywords:
+            if keyword in text_to_analyze:
+                return CategoryType.PERSONAL
+                
+        # Default to personal if no keywords match
+        return CategoryType.PERSONAL
+    
+    @staticmethod
+    def parse_gpay_sms(sms_text: str) -> Optional[Dict]:
+        """Parse GPay SMS format"""
+        patterns = [
+            # GPay sent money pattern
+            r'You sent ₹([\d,]+\.?\d*) to (.+?) via Google Pay UPI ID: (.+?) on (.+?)\.',
+            # GPay received money pattern  
+            r'You received ₹([\d,]+\.?\d*) from (.+?) via Google Pay UPI ID: (.+?) on (.+?)\.',
+            # GPay payment pattern
+            r'You paid ₹([\d,]+\.?\d*) to (.+?) using Google Pay\. UPI transaction ID (.+?) on (.+?)\.',
+            # Another GPay pattern
+            r'₹([\d,]+\.?\d*) sent to (.+?) using Google Pay\. (.+?) on (.+?)\.'
+        ]
+        
+        for i, pattern in enumerate(patterns):
+            match = re.search(pattern, sms_text, re.IGNORECASE)
+            if match:
+                amount = float(match.group(1).replace(',', ''))
+                merchant = match.group(2).strip()
+                
+                # Determine transaction type based on pattern
+                transaction_type = TransactionType.CREDIT if i == 1 else TransactionType.DEBIT
+                
+                return {
+                    'amount': amount,
+                    'merchant': merchant,
+                    'transaction_type': transaction_type,
+                    'payment_method': PaymentMethod.GPAY,
+                    'upi_transaction_id': match.group(3) if len(match.groups()) >= 3 else None,
+                    'sms_text': sms_text
+                }
+        return None
+    
+    @staticmethod
+    def parse_phonepe_sms(sms_text: str) -> Optional[Dict]:
+        """Parse PhonePe SMS format"""
+        patterns = [
+            # PhonePe payment pattern
+            r'You have successfully paid Rs\.([\d,]+\.?\d*) to (.+?) via PhonePe\. Txn ID: (.+?) on (.+?)\.',
+            # PhonePe sent money pattern
+            r'₹([\d,]+\.?\d*) sent to (.+?) via PhonePe\. Transaction ID (.+?) on (.+?)\.',
+            # PhonePe received money pattern
+            r'₹([\d,]+\.?\d*) received from (.+?) via PhonePe\. Transaction ID (.+?) on (.+?)\.'
+        ]
+        
+        for i, pattern in enumerate(patterns):
+            match = re.search(pattern, sms_text, re.IGNORECASE)
+            if match:
+                amount = float(match.group(1).replace(',', ''))
+                merchant = match.group(2).strip()
+                
+                # Determine transaction type  
+                transaction_type = TransactionType.CREDIT if 'received' in pattern else TransactionType.DEBIT
+                
+                return {
+                    'amount': amount,
+                    'merchant': merchant,
+                    'transaction_type': transaction_type,
+                    'payment_method': PaymentMethod.PHONEPE,
+                    'upi_transaction_id': match.group(3) if len(match.groups()) >= 3 else None,
+                    'sms_text': sms_text
+                }
+        return None
+    
+    @staticmethod
+    def parse_sms(sms_text: str) -> Optional[Transaction]:
+        """Main SMS parsing function"""
+        # Try GPay first
+        parsed = SMSParser.parse_gpay_sms(sms_text)
+        if not parsed:
+            # Try PhonePe
+            parsed = SMSParser.parse_phonepe_sms(sms_text)
+        
+        if parsed:
+            # Auto-categorize based on merchant and SMS content
+            category = SMSParser.categorize_transaction(
+                parsed.get('sms_text', ''), 
+                parsed.get('merchant', '')
+            )
+            
+            transaction = Transaction(
+                amount=parsed['amount'],
+                transaction_type=parsed['transaction_type'],
+                category=category,
+                payment_method=parsed['payment_method'],
+                merchant=parsed.get('merchant'),
+                description=parsed.get('sms_text'),
+                upi_transaction_id=parsed.get('upi_transaction_id')
+            )
+            return transaction
+        
+        return None
+
+# Helper function to prepare data for MongoDB
+def prepare_for_mongo(data):
+    if isinstance(data, dict):
+        prepared = {}
+        for key, value in data.items():
+            if isinstance(value, datetime):
+                prepared[key] = value.isoformat()
+            elif isinstance(value, Enum):
+                prepared[key] = value.value
+            else:
+                prepared[key] = value
+        return prepared
+    return data
+
+def parse_from_mongo(item):
+    if isinstance(item, dict):
+        parsed = {}
+        for key, value in item.items():
+            if key in ['transaction_date', 'created_at'] and isinstance(value, str):
+                parsed[key] = datetime.fromisoformat(value)
+            else:
+                parsed[key] = value
+        return parsed
+    return item
+
+# API Routes
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Finance Management API"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.dict()
-    status_obj = StatusCheck(**status_dict)
-    _ = await db.status_checks.insert_one(status_obj.dict())
-    return status_obj
+@api_router.post("/transactions", response_model=Transaction)
+async def create_transaction(transaction_data: TransactionCreate):
+    """Create a new transaction manually"""
+    transaction_dict = transaction_data.dict()
+    if transaction_dict.get('transaction_date') is None:
+        transaction_dict['transaction_date'] = datetime.now(timezone.utc)
+    
+    transaction = Transaction(**transaction_dict)
+    transaction_mongo = prepare_for_mongo(transaction.dict())
+    await db.transactions.insert_one(transaction_mongo)
+    return transaction
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    status_checks = await db.status_checks.find().to_list(1000)
-    return [StatusCheck(**status_check) for status_check in status_checks]
+@api_router.get("/transactions", response_model=List[Transaction])
+async def get_transactions(limit: int = 100):
+    """Get all transactions with optional limit"""
+    transactions = await db.transactions.find().sort("created_at", -1).limit(limit).to_list(length=None)
+    parsed_transactions = [parse_from_mongo(t) for t in transactions]
+    return [Transaction(**t) for t in parsed_transactions]
+
+@api_router.post("/parse-sms")
+async def parse_sms(request: SMSParseRequest):
+    """Parse SMS text and create transaction"""
+    transaction = SMSParser.parse_sms(request.sms_text)
+    
+    if not transaction:
+        raise HTTPException(status_code=400, detail="Unable to parse SMS text. Please check the format.")
+    
+    # Save to database
+    transaction_mongo = prepare_for_mongo(transaction.dict())
+    await db.transactions.insert_one(transaction_mongo)
+    
+    return {
+        "success": True,
+        "message": "SMS parsed successfully",
+        "transaction": transaction
+    }
+
+@api_router.post("/parse-sms-bulk")
+async def parse_sms_bulk(file: UploadFile = File(...)):
+    """Parse multiple SMS from uploaded text file"""
+    if not file.filename.endswith(('.txt', '.csv')):
+        raise HTTPException(status_code=400, detail="Only .txt and .csv files are supported")
+    
+    content = await file.read()
+    sms_text = content.decode('utf-8')
+    
+    # Split by lines and parse each SMS
+    sms_lines = [line.strip() for line in sms_text.split('\n') if line.strip()]
+    
+    parsed_count = 0
+    failed_count = 0
+    transactions = []
+    
+    for sms_line in sms_lines:
+        transaction = SMSParser.parse_sms(sms_line)
+        if transaction:
+            transaction_mongo = prepare_for_mongo(transaction.dict())
+            await db.transactions.insert_one(transaction_mongo)
+            transactions.append(transaction)
+            parsed_count += 1
+        else:
+            failed_count += 1
+    
+    return {
+        "success": True,
+        "parsed_count": parsed_count,
+        "failed_count": failed_count,
+        "total_lines": len(sms_lines),
+        "transactions": transactions
+    }
+
+@api_router.get("/dashboard/stats")
+async def get_dashboard_stats():
+    """Get dashboard statistics"""
+    
+    # Get current month boundaries
+    now = datetime.now(timezone.utc)
+    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    
+    # Aggregate total by category
+    pipeline_total = [
+        {"$group": {
+            "_id": "$category",
+            "total_debit": {"$sum": {"$cond": [{"$eq": ["$transaction_type", "debit"]}, "$amount", 0]}},
+            "total_credit": {"$sum": {"$cond": [{"$eq": ["$transaction_type", "credit"]}, "$amount", 0]}}
+        }}
+    ]
+    
+    # Aggregate monthly by category
+    pipeline_monthly = [
+        {"$match": {"created_at": {"$gte": start_of_month.isoformat()}}},
+        {"$group": {
+            "_id": "$category", 
+            "monthly_debit": {"$sum": {"$cond": [{"$eq": ["$transaction_type", "debit"]}, "$amount", 0]}}
+        }}
+    ]
+    
+    total_results = await db.transactions.aggregate(pipeline_total).to_list(length=None)
+    monthly_results = await db.transactions.aggregate(pipeline_monthly).to_list(length=None)
+    
+    # Process results
+    stats = {
+        "total_personal": 0,
+        "total_official": 0, 
+        "total_expenses": 0,
+        "total_income": 0,
+        "monthly_personal": 0,
+        "monthly_official": 0
+    }
+    
+    for result in total_results:
+        category = result["_id"]
+        debit = result["total_debit"]
+        credit = result["total_credit"]
+        
+        if category == "personal":
+            stats["total_personal"] = debit
+        elif category == "official":
+            stats["total_official"] = debit
+            
+        stats["total_expenses"] += debit
+        stats["total_income"] += credit
+    
+    for result in monthly_results:
+        category = result["_id"]
+        monthly_debit = result["monthly_debit"]
+        
+        if category == "personal":
+            stats["monthly_personal"] = monthly_debit
+        elif category == "official":
+            stats["monthly_official"] = monthly_debit
+    
+    return stats
+
+@api_router.get("/analytics/category-distribution")
+async def get_category_distribution():
+    """Get expense distribution by category for pie chart"""
+    pipeline = [
+        {"$match": {"transaction_type": "debit"}},
+        {"$group": {"_id": "$category", "total": {"$sum": "$amount"}}},
+        {"$sort": {"total": -1}}
+    ]
+    
+    results = await db.transactions.aggregate(pipeline).to_list(length=None)
+    return [{"category": result["_id"], "amount": result["total"]} for result in results]
+
+@api_router.get("/analytics/monthly-trends")
+async def get_monthly_trends():
+    """Get monthly spending trends for line chart"""
+    pipeline = [
+        {"$match": {"transaction_type": "debit"}},
+        {
+            "$group": {
+                "_id": {
+                    "year": {"$year": {"$dateFromString": {"dateString": "$created_at"}}},
+                    "month": {"$month": {"$dateFromString": {"dateString": "$created_at"}}},
+                    "category": "$category"
+                },
+                "total": {"$sum": "$amount"}
+            }
+        },
+        {"$sort": {"_id.year": 1, "_id.month": 1}}
+    ]
+    
+    results = await db.transactions.aggregate(pipeline).to_list(length=None)
+    return results
+
+@api_router.delete("/transactions/{transaction_id}")
+async def delete_transaction(transaction_id: str):
+    """Delete a transaction"""
+    result = await db.transactions.delete_one({"id": transaction_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    return {"success": True, "message": "Transaction deleted successfully"}
 
 # Include the router in the main app
 app.include_router(api_router)
