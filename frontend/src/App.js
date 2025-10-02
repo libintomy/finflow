@@ -431,7 +431,13 @@ const Dashboard = () => {
                         {transaction.description}
                       </p>
                     )}
-                    <p className="text-xs text-gray-500">{new Date(transaction.transaction_date).toLocaleDateString()}</p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(transaction.transaction_date).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: new Date(transaction.transaction_date).getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+                      })}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
