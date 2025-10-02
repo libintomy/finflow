@@ -351,11 +351,13 @@ async def get_dashboard_stats():
     # Process results
     stats = {
         "total_personal": 0,
-        "total_official": 0, 
+        "total_official": 0,
+        "total_savings": 0,
         "total_expenses": 0,
         "total_income": 0,
         "monthly_personal": 0,
-        "monthly_official": 0
+        "monthly_official": 0,
+        "monthly_savings": 0
     }
     
     for result in total_results:
@@ -367,6 +369,8 @@ async def get_dashboard_stats():
             stats["total_personal"] = debit
         elif category == "official":
             stats["total_official"] = debit
+        elif category == "savings":
+            stats["total_savings"] = debit
             
         stats["total_expenses"] += debit
         stats["total_income"] += credit
@@ -379,6 +383,8 @@ async def get_dashboard_stats():
             stats["monthly_personal"] = monthly_debit
         elif category == "official":
             stats["monthly_official"] = monthly_debit
+        elif category == "savings":
+            stats["monthly_savings"] = monthly_debit
     
     return stats
 
