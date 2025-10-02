@@ -589,6 +589,8 @@ const ManualEntry = () => {
     description: ''
   });
   const [loading, setLoading] = useState(false);
+  const [lastTransactionId, setLastTransactionId] = useState(null);
+  const [undoLoading, setUndoLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
