@@ -276,6 +276,59 @@ const Dashboard = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Savings Expenses Donut Chart */}
+        <Card data-testid="savings-donut-chart">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-amber-600" />
+              Savings & Investments
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <Pie
+                  data={savingsBreakdown}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ percent }) => percent > 15 ? `${(percent * 100).toFixed(0)}%` : ''}
+                  outerRadius={60}
+                  innerRadius={35}
+                  fill="#F59E0B"
+                  dataKey="amount"
+                >
+                  {savingsBreakdown.map((entry, index) => (
+                    <Cell key={`savings-${index}`} fill={`hsl(${45 + index * 20}, 70%, ${55 - index * 5}%)`} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, 'Amount']} />
+                <Legend 
+                  verticalAlign="bottom" 
+                  height={36}
+                  formatter={(value) => value.length > 15 ? value.substring(0, 15) + '...' : value}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+            {/* Custom Legend for better control */}
+            <div className="mt-2 space-y-1 max-h-20 overflow-y-auto">
+              {savingsBreakdown.slice(0, 5).map((item, index) => (
+                <div key={index} className="flex items-center gap-2 text-xs">
+                  <div 
+                    className="w-3 h-3 rounded-sm" 
+                    style={{ backgroundColor: `hsl(${45 + index * 20}, 70%, ${55 - index * 5}%)` }}
+                  />
+                  <span className="truncate flex-1">{item.merchant}</span>
+                  <span className="font-medium">₹{item.amount.toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+            {savingsBreakdown.length === 0 && (
+              <p className="text-center text-gray-500 py-8 text-sm">No savings/investments</p>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Recent Transactions */}
