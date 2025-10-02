@@ -1151,22 +1151,30 @@ const Navigation = () => {
   );
 };
 
+// Create a context for selected month/year
+const MonthYearContext = React.createContext();
+
 function App() {
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <BrowserRouter>
-        <Navigation />
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/parse" element={<SMSParser />} />
-            <Route path="/add" element={<ManualEntry />} />
-            <Route path="/manage" element={<ManageTransactions />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
-      <Toaster />
-    </div>
+    <MonthYearContext.Provider value={{ selectedMonth, setSelectedMonth, selectedYear, setSelectedYear }}>
+      <div className="min-h-screen bg-gray-50">
+        <BrowserRouter>
+          <Navigation />
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/parse" element={<SMSParser />} />
+              <Route path="/add" element={<ManualEntry />} />
+              <Route path="/manage" element={<ManageTransactions />} />
+            </Routes>
+          </div>
+        </BrowserRouter>
+        <Toaster />
+      </div>
+    </MonthYearContext.Provider>
   );
 }
 
