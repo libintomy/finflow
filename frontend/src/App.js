@@ -226,7 +226,7 @@ const Dashboard = () => {
         <Card data-testid="net-balance-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Net Balance</CardTitle>
-            <TrendingUp className={`h-4 w-4 ${stats.net_balance >= 0 ? 'text-green-500' : 'text-red-500'}`} />
+            <TrendingUp className={`h-4 w-4 ${(stats.net_balance || 0) >= 0 ? 'text-green-500' : 'text-red-500'}`} />
           </CardHeader>
           <CardContent>
             <div className={`text-2xl font-bold ${(stats.net_balance || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
