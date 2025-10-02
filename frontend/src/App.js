@@ -1179,7 +1179,7 @@ const Navigation = () => {
 };
 
 // Create a context for selected month/year
-const MonthYearContext = React.createContext();
+const MonthYearContext = createContext();
 
 function App() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
