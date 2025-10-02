@@ -602,10 +602,14 @@ const ManualEntry = () => {
 
     setLoading(true);
     try {
-      await axios.post(`${API}/transactions`, {
+      const response = await axios.post(`${API}/transactions`, {
         ...formData,
         amount: parseFloat(formData.amount)
       });
+      
+      // Store the transaction ID for undo functionality
+      setLastTransactionId(response.data.id);
+      
       toast.success('Transaction added successfully!');
       setFormData({
         amount: '',
@@ -615,11 +619,36 @@ const ManualEntry = () => {
         merchant: '',
         description: ''
       });
-      navigate('/');
+      
+      // Don't navigate immediately, allow user to see undo option
+      setTimeout(() => {
+        if (lastTransactionId !== response.data.id) {
+          // Only navigate if user hasn't used undo
+          // navigate('/');
+        }
+      }, 3000);
     } catch (error) {
       toast.error('Failed to add transaction');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUndo = async () => {
+    if (!lastTransactionId) {
+      toast.error('No recent transaction to undo');
+      return;
+    }
+
+    setUndoLoading(true);
+    try {
+      await axios.delete(`${API}/transactions/${lastTransactionId}`);
+      toast.success('Transaction undone successfully!');
+      setLastTransactionId(null);
+    } catch (error) {
+      toast.error('Failed to undo transaction');
+    } finally {
+      setUndoLoading(false);
     }
   };
 
