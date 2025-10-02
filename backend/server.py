@@ -369,7 +369,7 @@ async def get_dashboard_stats(month: int = None, year: int = None):
     total_results = await db.transactions.aggregate(pipeline_total).to_list(length=None)
     monthly_results = await db.transactions.aggregate(pipeline_monthly).to_list(length=None)
     
-    # Process results
+    # Process results (all data is now for the selected month only)
     stats = {
         "total_personal": 0,
         "total_official": 0,
@@ -377,11 +377,11 @@ async def get_dashboard_stats(month: int = None, year: int = None):
         "total_expenses": 0,
         "total_income": 0,
         "net_balance": 0,
-        "monthly_personal": 0,
-        "monthly_official": 0,
-        "monthly_savings": 0
+        "selected_month": target_month,
+        "selected_year": target_year
     }
     
+    # Both total_results and monthly_results now contain the same data (for selected month)
     for result in total_results:
         category = result["_id"]
         debit = result["total_debit"]
@@ -397,18 +397,7 @@ async def get_dashboard_stats(month: int = None, year: int = None):
         stats["total_expenses"] += debit
         stats["total_income"] += credit
     
-    for result in monthly_results:
-        category = result["_id"]
-        monthly_debit = result["monthly_debit"]
-        
-        if category == "personal":
-            stats["monthly_personal"] = monthly_debit
-        elif category == "official":
-            stats["monthly_official"] = monthly_debit
-        elif category == "savings":
-            stats["monthly_savings"] = monthly_debit
-    
-    # Calculate net balance (Income - Expenses)
+    # Calculate net balance (Income - Expenses for selected month)
     stats["net_balance"] = stats["total_income"] - stats["total_expenses"]
     
     return stats
