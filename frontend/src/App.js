@@ -122,17 +122,17 @@ const Dashboard = () => {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Pie Chart - Category Distribution */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Overall Pie Chart - Category Distribution */}
         <Card data-testid="category-pie-chart">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
-              Expense Categories
+              Overall Categories
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
                   data={categoryData}
@@ -140,7 +140,7 @@ const Dashboard = () => {
                   cy="50%"
                   labelLine={false}
                   label={({ category, percent }) => `${category} ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
+                  outerRadius={70}
                   fill="#8884d8"
                   dataKey="amount"
                 >
@@ -154,42 +154,112 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Recent Transactions */}
-        <Card data-testid="recent-transactions">
+        {/* Official Expenses Donut Chart */}
+        <Card data-testid="official-donut-chart">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Receipt className="h-5 w-5" />
-              Recent Transactions
+              <CreditCard className="h-5 w-5 text-blue-600" />
+              Official Expenses
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3 max-h-80 overflow-y-auto">
-              {recentTransactions.map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-3 h-3 rounded-full ${transaction.category === 'personal' ? 'bg-emerald-500' : 'bg-blue-500'}`} />
-                    <div>
-                      <p className="font-medium text-sm">{transaction.merchant || 'Unknown Merchant'}</p>
-                      <p className="text-xs text-gray-500">{new Date(transaction.transaction_date).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className={`font-semibold ${transaction.transaction_type === 'debit' ? 'text-red-600' : 'text-green-600'}`}>
-                      {transaction.transaction_type === 'debit' ? '-' : '+'}₹{transaction.amount.toLocaleString()}
-                    </p>
-                    <Badge variant="outline" className="text-xs">
-                      {transaction.category}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-              {recentTransactions.length === 0 && (
-                <p className="text-center text-gray-500 py-8">No transactions found</p>
-              )}
-            </div>
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={officialBreakdown}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ merchant, percent }) => percent > 10 ? `${merchant} ${(percent * 100).toFixed(0)}%` : ''}
+                  outerRadius={70}
+                  innerRadius={40}
+                  fill="#3B82F6"
+                  dataKey="amount"
+                >
+                  {officialBreakdown.map((entry, index) => (
+                    <Cell key={`official-${index}`} fill={`hsl(${210 + index * 30}, 70%, ${60 - index * 5}%)`} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, 'Amount']} />
+              </PieChart>
+            </ResponsiveContainer>
+            {officialBreakdown.length === 0 && (
+              <p className="text-center text-gray-500 py-8 text-sm">No official expenses</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Personal Expenses Donut Chart */}
+        <Card data-testid="personal-donut-chart">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wallet className="h-5 w-5 text-emerald-600" />
+              Personal Expenses
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={personalBreakdown}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ merchant, percent }) => percent > 10 ? `${merchant} ${(percent * 100).toFixed(0)}%` : ''}
+                  outerRadius={70}
+                  innerRadius={40}
+                  fill="#10B981"
+                  dataKey="amount"
+                >
+                  {personalBreakdown.map((entry, index) => (
+                    <Cell key={`personal-${index}`} fill={`hsl(${160 + index * 25}, 70%, ${50 - index * 5}%)`} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, 'Amount']} />
+              </PieChart>
+            </ResponsiveContainer>
+            {personalBreakdown.length === 0 && (
+              <p className="text-center text-gray-500 py-8 text-sm">No personal expenses</p>
+            )}
           </CardContent>
         </Card>
       </div>
+
+      {/* Recent Transactions */}
+      <Card data-testid="recent-transactions">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Receipt className="h-5 w-5" />
+            Recent Transactions
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3 max-h-80 overflow-y-auto">
+            {recentTransactions.map((transaction) => (
+              <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className={`w-3 h-3 rounded-full ${transaction.category === 'personal' ? 'bg-emerald-500' : 'bg-blue-500'}`} />
+                  <div>
+                    <p className="font-medium text-sm">{transaction.merchant || 'Unknown Merchant'}</p>
+                    <p className="text-xs text-gray-500">{new Date(transaction.transaction_date).toLocaleDateString()}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className={`font-semibold ${transaction.transaction_type === 'debit' ? 'text-red-600' : 'text-green-600'}`}>
+                    {transaction.transaction_type === 'debit' ? '-' : '+'}₹{transaction.amount.toLocaleString()}
+                  </p>
+                  <Badge variant="outline" className="text-xs">
+                    {transaction.category}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+            {recentTransactions.length === 0 && (
+              <p className="text-center text-gray-500 py-8">No transactions found</p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
