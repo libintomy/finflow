@@ -32,6 +32,7 @@ const COLORS = {
 };
 
 const Dashboard = () => {
+  const { selectedMonth, setSelectedMonth, selectedYear, setSelectedYear } = useContext(MonthYearContext);
   const [stats, setStats] = useState({
     total_personal: 0,
     total_official: 0,
@@ -39,8 +40,8 @@ const Dashboard = () => {
     total_expenses: 0,
     total_income: 0,
     net_balance: 0,
-    selected_month: new Date().getMonth() + 1,
-    selected_year: new Date().getFullYear()
+    selected_month: selectedMonth,
+    selected_year: selectedYear
   });
   const [categoryData, setCategoryData] = useState([]);
   const [monthlyTrends, setMonthlyTrends] = useState([]);
@@ -49,8 +50,6 @@ const Dashboard = () => {
   const [personalBreakdown, setPersonalBreakdown] = useState([]);
   const [savingsBreakdown, setSavingsBreakdown] = useState([]);
   const [deletingTransactionId, setDeletingTransactionId] = useState(null);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // 1-based
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   // Get month names
   const getMonthNames = () => [
