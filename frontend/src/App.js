@@ -80,6 +80,25 @@ const Dashboard = () => {
     }
   };
 
+  const handleDeleteTransaction = async (transactionId, merchantName) => {
+    if (!window.confirm(`Are you sure you want to delete the transaction for ${merchantName}?`)) {
+      return;
+    }
+
+    setDeletingTransactionId(transactionId);
+    try {
+      await axios.delete(`${API}/transactions/${transactionId}`);
+      toast.success('Transaction deleted successfully!');
+      // Refresh dashboard data
+      fetchDashboardData();
+    } catch (error) {
+      toast.error('Failed to delete transaction');
+      console.error('Delete transaction error:', error);
+    } finally {
+      setDeletingTransactionId(null);
+    }
+  };
+
   return (
     <div className="space-y-6" data-testid="dashboard">
       {/* Stats Cards */}
