@@ -261,9 +261,25 @@ async def create_transaction(transaction_data: TransactionCreate):
     return transaction
 
 @api_router.get("/transactions", response_model=List[Transaction])
-async def get_transactions(limit: int = 100):
-    """Get all transactions with optional limit"""
-    transactions = await db.transactions.find().sort("created_at", -1).limit(limit).to_list(length=None)
+async def get_transactions(limit: int = 100, month: int = None, year: int = None):
+    """Get transactions with optional limit and month/year filtering"""
+    
+    # Build query criteria
+    query = {}
+    
+    if month is not None and year is not None:
+        start_of_month = datetime(year, month, 1, tzinfo=timezone.utc)
+        if month == 12:
+            end_of_month = datetime(year + 1, 1, 1, tzinfo=timezone.utc)
+        else:
+            end_of_month = datetime(year, month + 1, 1, tzinfo=timezone.utc)
+        
+        query["created_at"] = {
+            "$gte": start_of_month.isoformat(),
+            "$lt": end_of_month.isoformat()
+        }
+    
+    transactions = await db.transactions.find(query).sort("created_at", -1).limit(limit).to_list(length=None)
     parsed_transactions = [parse_from_mongo(t) for t in transactions]
     return [Transaction(**t) for t in parsed_transactions]
 
