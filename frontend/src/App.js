@@ -207,7 +207,7 @@ const Dashboard = () => {
             <TrendingUp className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">₹{stats.total_income.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-green-600">₹{(stats.total_income || 0).toLocaleString()}</div>
             <p className="text-xs text-gray-500 mt-1">{getSelectedMonthYear()}</p>
           </CardContent>
         </Card>
