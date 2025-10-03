@@ -230,18 +230,27 @@ class SMSParser:
     @staticmethod
     def parse_sms(sms_text: str) -> Optional[Transaction]:
         """Main SMS parsing function"""
-        # Try GPay first
-        parsed = SMSParser.parse_gpay_sms(sms_text)
+        # Try custom format first (highest priority)
+        parsed = SMSParser.parse_custom_format(sms_text)
+        
         if not parsed:
-            # Try PhonePe
+            # Try GPay format
+            parsed = SMSParser.parse_gpay_sms(sms_text)
+            
+        if not parsed:
+            # Try PhonePe format
             parsed = SMSParser.parse_phonepe_sms(sms_text)
         
         if parsed:
-            # Auto-categorize based on merchant and SMS content
-            category = SMSParser.categorize_transaction(
-                parsed.get('sms_text', ''), 
-                parsed.get('merchant', '')
-            )
+            # For custom format, category is already determined
+            if 'category' in parsed:
+                category = parsed['category']
+            else:
+                # Auto-categorize for legacy formats
+                category = SMSParser.categorize_transaction(
+                    parsed.get('sms_text', ''), 
+                    parsed.get('merchant', '')
+                )
             
             transaction = Transaction(
                 amount=parsed['amount'],
@@ -249,7 +258,7 @@ class SMSParser:
                 category=category,
                 payment_method=parsed['payment_method'],
                 merchant=parsed.get('merchant'),
-                description=parsed.get('sms_text'),
+                description=parsed.get('description', parsed.get('sms_text', '')),
                 upi_transaction_id=parsed.get('upi_transaction_id')
             )
             return transaction
