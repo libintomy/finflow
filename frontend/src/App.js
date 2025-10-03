@@ -1318,11 +1318,16 @@ const ManageTransactions = () => {
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle>All Transactions ({transactions.length})</CardTitle>
+            <CardTitle>
+              Filtered Transactions ({filteredTransactions.length})
+              {filteredTransactions.length !== transactions.length && 
+                <span className="text-sm text-gray-500 font-normal ml-2">of {transactions.length} total</span>
+              }
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2 max-h-96 overflow-y-auto">
-              {transactions.map((transaction) => (
+              {filteredTransactions.map((transaction) => (
                 <div key={transaction.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
                   <div className="flex items-center gap-4">
                     <div className={`w-4 h-4 rounded-full ${
