@@ -1062,7 +1062,9 @@ const ManageTransactions = () => {
     paymentMethod: 'all',
     merchant: '',
     amountMin: '',
-    amountMax: ''
+    amountMax: '',
+    filterMonth: 'all',
+    filterYear: 'all'
   });
 
   useEffect(() => {
