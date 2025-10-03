@@ -755,7 +755,7 @@ const SMSParser = () => {
 
           <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
             <p className="text-sm text-amber-800">
-              <strong>💡 Pro Tip:</strong> Use the structured format <code className="bg-white px-1 rounded">OL/PL/SV AMOUNT MERCHANT DESCRIPTION</code> for better accuracy and detailed transaction descriptions!
+              <strong>💡 Pro Tip:</strong> Use the structured format <code className="bg-white px-1 rounded">OL/PL/SV AMOUNT MERCHANT, DESCRIPTION</code> with a comma to separate merchant from description for perfect parsing!
             </p>
           </div>
         </CardContent>
