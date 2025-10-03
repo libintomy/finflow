@@ -1125,6 +1125,25 @@ const ManageTransactions = () => {
       }
     }
 
+    // Month filter
+    if (filters.filterMonth !== 'all' || filters.filterYear !== 'all') {
+      filtered = filtered.filter(t => {
+        const transactionDate = new Date(t.created_at);
+        let matchesMonth = true;
+        let matchesYear = true;
+
+        if (filters.filterMonth !== 'all') {
+          matchesMonth = (transactionDate.getMonth() + 1) === parseInt(filters.filterMonth);
+        }
+
+        if (filters.filterYear !== 'all') {
+          matchesYear = transactionDate.getFullYear() === parseInt(filters.filterYear);
+        }
+
+        return matchesMonth && matchesYear;
+      });
+    }
+
     setFilteredTransactions(filtered);
   };
 
