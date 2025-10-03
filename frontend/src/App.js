@@ -160,12 +160,20 @@ const Dashboard = () => {
       {/* Month Selector */}
       <div className="text-center space-y-4">
         <h2 className="text-2xl font-bold text-gray-900">Financial Dashboard</h2>
-        <div className="flex items-center justify-center gap-4">
+        <div className="flex items-center justify-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
             <Label htmlFor="month-select" className="text-sm font-medium">Month:</Label>
             <Select 
               value={selectedMonth.toString()}
-              onValueChange={(value) => setSelectedMonth(parseInt(value))}
+              onValueChange={(value) => {
+                const newMonth = parseInt(value);
+                setSelectedMonth(newMonth);
+                // Adjust date if it's invalid for the new month
+                const daysInNewMonth = new Date(selectedYear, newMonth, 0).getDate();
+                if (selectedDate > daysInNewMonth) {
+                  setSelectedDate(daysInNewMonth);
+                }
+              }}
             >
               <SelectTrigger className="w-32" id="month-select" data-testid="month-select">
                 <SelectValue />
@@ -184,7 +192,15 @@ const Dashboard = () => {
             <Label htmlFor="year-select" className="text-sm font-medium">Year:</Label>
             <Select 
               value={selectedYear.toString()}
-              onValueChange={(value) => setSelectedYear(parseInt(value))}
+              onValueChange={(value) => {
+                const newYear = parseInt(value);
+                setSelectedYear(newYear);
+                // Adjust date if it's invalid for the new year (leap year scenarios)
+                const daysInMonth = new Date(newYear, selectedMonth, 0).getDate();
+                if (selectedDate > daysInMonth) {
+                  setSelectedDate(daysInMonth);
+                }
+              }}
             >
               <SelectTrigger className="w-24" id="year-select" data-testid="year-select">
                 <SelectValue />
@@ -198,6 +214,25 @@ const Dashboard = () => {
               </SelectContent>
             </Select>
           </div>
+
+          <div className="flex items-center gap-2">
+            <Label htmlFor="date-select" className="text-sm font-medium">Date:</Label>
+            <Select 
+              value={selectedDate.toString()}
+              onValueChange={(value) => setSelectedDate(parseInt(value))}
+            >
+              <SelectTrigger className="w-20" id="date-select" data-testid="date-select">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {getAvailableDays().map((day) => (
+                  <SelectItem key={day} value={day.toString()}>
+                    {day}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           
           <Button
             variant="outline"
@@ -206,16 +241,17 @@ const Dashboard = () => {
               const now = new Date();
               setSelectedMonth(now.getMonth() + 1);
               setSelectedYear(now.getFullYear());
+              setSelectedDate(now.getDate());
             }}
-            data-testid="current-month-btn"
+            data-testid="current-date-btn"
             className="text-blue-600 border-blue-200 hover:bg-blue-50"
           >
-            Current Month
+            Today
           </Button>
         </div>
         
         <p className="text-gray-600">
-          Viewing data for <span className="font-semibold text-blue-600">{getSelectedMonthYear()}</span>
+          Viewing data for <span className="font-semibold text-blue-600">{getSelectedDateDisplay()}</span>
         </p>
       </div>
 
