@@ -711,25 +711,25 @@ const SMSParser = () => {
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
             <h4 className="font-semibold text-green-800 mb-2">✨ New Structured Format (Recommended)</h4>
             <p className="text-sm text-green-700 mb-3">
-              <strong>Format:</strong> <code className="bg-white px-2 py-1 rounded">KEYWORD AMOUNT MERCHANT DESCRIPTION</code>
+              <strong>Format:</strong> <code className="bg-white px-2 py-1 rounded">KEYWORD AMOUNT MERCHANT, DESCRIPTION</code>
             </p>
             <div className="space-y-2">
               <div>
                 <p className="font-medium text-sm mb-1 text-green-800">Official Expense:</p>
                 <code className="text-xs bg-white p-2 rounded block">
-                  OL 500 Swiggy office lunch delivery for team meeting
+                  OL 500 Swiggy, office lunch delivery for team meeting
                 </code>
               </div>
               <div>
                 <p className="font-medium text-sm mb-1 text-green-800">Personal Expense:</p>
                 <code className="text-xs bg-white p-2 rounded block">
-                  PL 1200 Amazon personal shopping for home items
+                  PL 1200 Amazon, personal shopping for home items
                 </code>
               </div>
               <div>
                 <p className="font-medium text-sm mb-1 text-green-800">Savings Investment:</p>
                 <code className="text-xs bg-white p-2 rounded block">
-                  SV 5000 SBI Mutual Fund monthly SIP investment
+                  SV 5000 SBI Mutual Fund, monthly SIP investment
                 </code>
               </div>
             </div>
