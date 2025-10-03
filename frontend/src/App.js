@@ -822,7 +822,7 @@ const SMSParser = () => {
 };
 
 const ManualEntry = () => {
-  const { selectedMonth, selectedYear } = useContext(MonthYearContext);
+  const { selectedMonth, selectedYear, selectedDate } = useContext(MonthYearContext);
   const [formData, setFormData] = useState({
     amount: '',
     transaction_type: 'debit',
