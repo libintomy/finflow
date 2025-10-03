@@ -1013,8 +1013,9 @@ const ManageTransactions = () => {
 
   const fetchTransactions = async () => {
     try {
-      const response = await axios.get(`${API}/transactions?limit=50`);
+      const response = await axios.get(`${API}/transactions?limit=200`);
       setTransactions(response.data);
+      setFilteredTransactions(response.data);
     } catch (error) {
       toast.error('Failed to fetch transactions');
       console.error('Fetch transactions error:', error);
@@ -1022,6 +1023,67 @@ const ManageTransactions = () => {
       setLoading(false);
     }
   };
+
+  const applyFilters = () => {
+    let filtered = [...transactions];
+
+    // Category filter
+    if (filters.category !== 'all') {
+      filtered = filtered.filter(t => t.category === filters.category);
+    }
+
+    // Transaction type filter
+    if (filters.transactionType !== 'all') {
+      filtered = filtered.filter(t => t.transaction_type === filters.transactionType);
+    }
+
+    // Payment method filter
+    if (filters.paymentMethod !== 'all') {
+      filtered = filtered.filter(t => t.payment_method === filters.paymentMethod);
+    }
+
+    // Merchant filter (case insensitive search)
+    if (filters.merchant.trim()) {
+      filtered = filtered.filter(t => 
+        (t.merchant || '').toLowerCase().includes(filters.merchant.toLowerCase()) ||
+        (t.description || '').toLowerCase().includes(filters.merchant.toLowerCase())
+      );
+    }
+
+    // Amount range filter
+    if (filters.amountMin) {
+      const minAmount = parseFloat(filters.amountMin);
+      if (!isNaN(minAmount)) {
+        filtered = filtered.filter(t => t.amount >= minAmount);
+      }
+    }
+
+    if (filters.amountMax) {
+      const maxAmount = parseFloat(filters.amountMax);
+      if (!isNaN(maxAmount)) {
+        filtered = filtered.filter(t => t.amount <= maxAmount);
+      }
+    }
+
+    setFilteredTransactions(filtered);
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      category: 'all',
+      transactionType: 'all',
+      paymentMethod: 'all',
+      merchant: '',
+      amountMin: '',
+      amountMax: ''
+    });
+    setFilteredTransactions(transactions);
+  };
+
+  // Apply filters whenever filters or transactions change
+  useEffect(() => {
+    applyFilters();
+  }, [filters, transactions]);
 
   const handleDeleteTransaction = async (transactionId, merchantName) => {
     if (!window.confirm(`Are you sure you want to delete the transaction for ${merchantName}?`)) {
