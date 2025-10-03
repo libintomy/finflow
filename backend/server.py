@@ -348,9 +348,10 @@ async def parse_sms(request: SMSParseRequest):
     if not transaction:
         raise HTTPException(status_code=400, detail="Unable to parse SMS text. Please check the format.")
     
-    # Override transaction date if target month/year is specified
+    # Override transaction date if target month/year/date is specified
     if request.target_month and request.target_year:
-        target_date = datetime(request.target_year, request.target_month, 15, tzinfo=timezone.utc)
+        target_day = request.target_date if request.target_date else 15  # Default to 15th if no date specified
+        target_date = datetime(request.target_year, request.target_month, target_day, tzinfo=timezone.utc)
         transaction.transaction_date = target_date
         transaction.created_at = target_date
     
