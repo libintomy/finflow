@@ -1436,7 +1436,7 @@ function App() {
   const [selectedDate, setSelectedDate] = useState(new Date().getDate());
 
   return (
-    <MonthYearContext.Provider value={{ selectedMonth, setSelectedMonth, selectedYear, setSelectedYear }}>
+    <MonthYearContext.Provider value={{ selectedMonth, setSelectedMonth, selectedYear, setSelectedYear, selectedDate, setSelectedDate }}>
       <div className="min-h-screen bg-gray-50">
         <BrowserRouter>
           <Navigation />
