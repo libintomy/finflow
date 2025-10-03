@@ -1259,7 +1259,7 @@ const ManageTransactions = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Category Filter */}
               <div>
                 <Label htmlFor="category-filter" className="text-sm font-medium">Category</Label>
@@ -1293,6 +1293,48 @@ const ManageTransactions = () => {
                     <SelectItem value="all">All Types</SelectItem>
                     <SelectItem value="debit">Expense (Debit)</SelectItem>
                     <SelectItem value="credit">Income (Credit)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Month Filter */}
+              <div>
+                <Label htmlFor="month-filter" className="text-sm font-medium">Filter by Month</Label>
+                <Select 
+                  value={filters.filterMonth}
+                  onValueChange={(value) => setFilters({...filters, filterMonth: value})}
+                >
+                  <SelectTrigger id="month-filter" data-testid="month-filter">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Months</SelectItem>
+                    {getMonthNames().map((month, index) => (
+                      <SelectItem key={index + 1} value={(index + 1).toString()}>
+                        {month}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Year Filter */}
+              <div>
+                <Label htmlFor="year-filter" className="text-sm font-medium">Filter by Year</Label>
+                <Select 
+                  value={filters.filterYear}
+                  onValueChange={(value) => setFilters({...filters, filterYear: value})}
+                >
+                  <SelectTrigger id="year-filter" data-testid="year-filter">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Years</SelectItem>
+                    {getAvailableYears().map((year) => (
+                      <SelectItem key={year} value={year.toString()}>
+                        {year}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
