@@ -69,6 +69,7 @@ class SMSParseRequest(BaseModel):
     sms_text: str
     target_month: Optional[int] = None
     target_year: Optional[int] = None
+    target_date: Optional[int] = None
 
 class DashboardStats(BaseModel):
     total_personal: float
