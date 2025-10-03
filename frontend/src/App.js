@@ -1095,7 +1095,9 @@ const ManageTransactions = () => {
       await axios.delete(`${API}/transactions/${transactionId}`);
       toast.success('Transaction deleted successfully!');
       // Remove from local state
-      setTransactions(transactions.filter(t => t.id !== transactionId));
+      const updatedTransactions = transactions.filter(t => t.id !== transactionId);
+      setTransactions(updatedTransactions);
+      setFilteredTransactions(filteredTransactions.filter(t => t.id !== transactionId));
     } catch (error) {
       toast.error('Failed to delete transaction');
       console.error('Delete transaction error:', error);
