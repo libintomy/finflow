@@ -611,7 +611,7 @@ const Dashboard = () => {
 };
 
 const SMSParser = () => {
-  const { selectedMonth, selectedYear } = useContext(MonthYearContext);
+  const { selectedMonth, selectedYear, selectedDate } = useContext(MonthYearContext);
   const [smsText, setSmsText] = useState('');
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
