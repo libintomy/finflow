@@ -129,14 +129,14 @@ class SMSParser:
     
     @staticmethod
     def parse_custom_format(sms_text: str) -> Optional[Dict]:
-        """Parse custom SMS format: [KEYWORD] [AMOUNT] [MERCHANT] [DESCRIPTION]"""
-        # Pattern: KEYWORD AMOUNT MERCHANT DESCRIPTION
+        """Parse custom SMS format: [KEYWORD] [AMOUNT] [MERCHANT], [DESCRIPTION]"""
+        # Pattern: KEYWORD AMOUNT MERCHANT, DESCRIPTION
         # Examples: 
-        # "OL 500 Swiggy office lunch delivery"
-        # "PL 1200 Amazon personal shopping"
-        # "SV 5000 SBI Mutual Fund monthly SIP"
+        # "OL 500 Swiggy, office lunch delivery for team meeting"
+        # "PL 1200 Amazon, personal shopping for home decor"
+        # "SV 5000 SBI Mutual Fund, monthly SIP investment"
         
-        pattern = r'^(OL|PL|SV)\s+(\d+(?:\.\d{1,2})?)\s+([^\s]+(?:\s+[^\s]+)*?)\s+(.+)$'
+        pattern = r'^(OL|PL|SV)\s+(\d+(?:\.\d{1,2})?)\s+([^,]+),\s*(.+)$'
         match = re.match(pattern, sms_text.strip(), re.IGNORECASE)
         
         if match:
