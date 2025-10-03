@@ -854,8 +854,8 @@ const ManualEntry = () => {
 
     setLoading(true);
     try {
-      // Create transaction date for the selected month/year
-      const transactionDate = new Date(selectedYear, selectedMonth - 1, 15); // 15th of selected month
+      // Create transaction date for the selected date
+      const transactionDate = new Date(selectedYear, selectedMonth - 1, selectedDate);
       
       const response = await axios.post(`${API}/transactions`, {
         ...formData,
