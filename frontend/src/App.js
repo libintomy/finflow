@@ -995,8 +995,17 @@ const ManualEntry = () => {
 
 const ManageTransactions = () => {
   const [transactions, setTransactions] = useState([]);
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingTransactionId, setDeletingTransactionId] = useState(null);
+  const [filters, setFilters] = useState({
+    category: 'all',
+    transactionType: 'all',
+    paymentMethod: 'all',
+    merchant: '',
+    amountMin: '',
+    amountMax: ''
+  });
 
   useEffect(() => {
     fetchTransactions();
