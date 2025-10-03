@@ -836,13 +836,13 @@ const ManualEntry = () => {
   const [undoLoading, setUndoLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Helper to get month name
-  const getSelectedMonthYear = () => {
+  // Helper to get date display
+  const getSelectedDateDisplay = () => {
     const monthNames = [
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'
     ];
-    return `${monthNames[selectedMonth - 1]} ${selectedYear}`;
+    return `${monthNames[selectedMonth - 1]} ${selectedDate}, ${selectedYear}`;
   };
 
   const handleSubmit = async (e) => {
