@@ -67,7 +67,28 @@ const Dashboard = () => {
     return years;
   };
 
-  // Format selected month/year for display
+  // Get days in selected month
+  const getDaysInMonth = () => {
+    return new Date(selectedYear, selectedMonth, 0).getDate();
+  };
+
+  // Get available days for selected month
+  const getAvailableDays = () => {
+    const daysInMonth = getDaysInMonth();
+    const days = [];
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push(day);
+    }
+    return days;
+  };
+
+  // Format selected date for display
+  const getSelectedDateDisplay = () => {
+    const monthNames = getMonthNames();
+    return `${monthNames[selectedMonth - 1]} ${selectedDate}, ${selectedYear}`;
+  };
+
+  // Format selected month/year for display (compatibility)
   const getSelectedMonthYear = () => {
     const monthNames = getMonthNames();
     return `${monthNames[selectedMonth - 1]} ${selectedYear}`;
