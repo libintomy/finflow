@@ -1135,7 +1135,10 @@ const ManageTransactions = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Manage Transactions</h2>
-          <p className="text-gray-600">View, edit, and delete your transactions • All time data</p>
+          <p className="text-gray-600">
+            View, filter, and delete your transactions • 
+            Showing {filteredTransactions.length} of {transactions.length} transactions
+          </p>
         </div>
         {transactions.length > 0 && (
           <Button 
@@ -1148,6 +1151,130 @@ const ManageTransactions = () => {
           </Button>
         )}
       </div>
+
+      {/* Filters Section */}
+      {transactions.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <div className="h-5 w-5 rounded bg-blue-500 flex items-center justify-center">
+                <div className="h-3 w-3 border border-white rounded"></div>
+              </div>
+              Filter Transactions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Category Filter */}
+              <div>
+                <Label htmlFor="category-filter" className="text-sm font-medium">Category</Label>
+                <Select 
+                  value={filters.category}
+                  onValueChange={(value) => setFilters({...filters, category: value})}
+                >
+                  <SelectTrigger id="category-filter" data-testid="category-filter">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="personal">Personal</SelectItem>
+                    <SelectItem value="official">Official</SelectItem>
+                    <SelectItem value="savings">Savings</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Transaction Type Filter */}
+              <div>
+                <Label htmlFor="type-filter" className="text-sm font-medium">Transaction Type</Label>
+                <Select 
+                  value={filters.transactionType}
+                  onValueChange={(value) => setFilters({...filters, transactionType: value})}
+                >
+                  <SelectTrigger id="type-filter" data-testid="type-filter">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="debit">Expense (Debit)</SelectItem>
+                    <SelectItem value="credit">Income (Credit)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Payment Method Filter */}
+              <div>
+                <Label htmlFor="payment-filter" className="text-sm font-medium">Payment Method</Label>
+                <Select 
+                  value={filters.paymentMethod}
+                  onValueChange={(value) => setFilters({...filters, paymentMethod: value})}
+                >
+                  <SelectTrigger id="payment-filter" data-testid="payment-filter">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Methods</SelectItem>
+                    <SelectItem value="manual">Manual</SelectItem>
+                    <SelectItem value="gpay">Google Pay</SelectItem>
+                    <SelectItem value="phonepe">PhonePe</SelectItem>
+                    <SelectItem value="upi">Other UPI</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Merchant/Description Search */}
+              <div>
+                <Label htmlFor="merchant-filter" className="text-sm font-medium">Search Merchant/Description</Label>
+                <Input
+                  id="merchant-filter"
+                  type="text"
+                  placeholder="Search merchant or description..."
+                  value={filters.merchant}
+                  onChange={(e) => setFilters({...filters, merchant: e.target.value})}
+                  data-testid="merchant-filter"
+                />
+              </div>
+
+              {/* Amount Min Filter */}
+              <div>
+                <Label htmlFor="amount-min-filter" className="text-sm font-medium">Min Amount (₹)</Label>
+                <Input
+                  id="amount-min-filter"
+                  type="number"
+                  placeholder="0"
+                  value={filters.amountMin}
+                  onChange={(e) => setFilters({...filters, amountMin: e.target.value})}
+                  data-testid="amount-min-filter"
+                />
+              </div>
+
+              {/* Amount Max Filter */}
+              <div>
+                <Label htmlFor="amount-max-filter" className="text-sm font-medium">Max Amount (₹)</Label>
+                <Input
+                  id="amount-max-filter"
+                  type="number"
+                  placeholder="100000"
+                  value={filters.amountMax}
+                  onChange={(e) => setFilters({...filters, amountMax: e.target.value})}
+                  data-testid="amount-max-filter"
+                />
+              </div>
+            </div>
+            
+            <div className="flex gap-2 mt-4">
+              <Button 
+                variant="outline" 
+                onClick={resetFilters}
+                data-testid="reset-filters-btn"
+              >
+                <X className="h-4 w-4 mr-2" />
+                Reset Filters
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {transactions.length === 0 ? (
         <Card>
