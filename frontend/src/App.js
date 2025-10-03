@@ -1154,9 +1154,23 @@ const ManageTransactions = () => {
       paymentMethod: 'all',
       merchant: '',
       amountMin: '',
-      amountMax: ''
+      amountMax: '',
+      filterMonth: 'all',
+      filterYear: 'all'
     });
     setFilteredTransactions(transactions);
+  };
+
+  // Helper functions for month/year filters
+  const getMonthNames = () => [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  const getAvailableYears = () => {
+    // Get unique years from transactions
+    const years = [...new Set(transactions.map(t => new Date(t.created_at).getFullYear()))];
+    return years.sort((a, b) => b - a); // Sort descending (newest first)
   };
 
   // Apply filters whenever filters or transactions change
