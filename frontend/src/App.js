@@ -1276,7 +1276,24 @@ const ManageTransactions = () => {
         </Card>
       )}
 
-      {transactions.length === 0 ? (
+      {filteredTransactions.length === 0 && transactions.length > 0 ? (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <div className="h-12 w-12 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-4">
+              <div className="h-6 w-6 border border-orange-500 rounded"></div>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Transactions Match Filters</h3>
+            <p className="text-gray-500 mb-6">Try adjusting your filter criteria to see more results.</p>
+            <Button 
+              variant="outline" 
+              onClick={resetFilters}
+              data-testid="reset-filters-from-empty"
+            >
+              Reset All Filters
+            </Button>
+          </CardContent>
+        </Card>
+      ) : transactions.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
             <Receipt className="h-12 w-12 text-gray-400 mx-auto mb-4" />
