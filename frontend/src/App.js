@@ -32,7 +32,7 @@ const COLORS = {
 };
 
 const Dashboard = () => {
-  const { selectedMonth, setSelectedMonth, selectedYear, setSelectedYear } = useContext(MonthYearContext);
+  const { selectedMonth, setSelectedMonth, selectedYear, setSelectedYear, selectedDate, setSelectedDate } = useContext(MonthYearContext);
   const [stats, setStats] = useState({
     total_personal: 0,
     total_official: 0,
