@@ -682,7 +682,7 @@ const SMSParser = () => {
     <div className="space-y-6" data-testid="sms-parser">
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold">SMS Transaction Parser</h2>
-        <p className="text-gray-600">Parse SMS messages for <span className="font-semibold text-blue-600">{getSelectedMonthYear()}</span></p>
+        <p className="text-gray-600">Parse SMS messages for <span className="font-semibold text-blue-600">{getSelectedDateDisplay()}</span></p>
       </div>
 
       <Tabs defaultValue="single" className="w-full">
