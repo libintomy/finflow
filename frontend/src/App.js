@@ -705,30 +705,57 @@ const SMSParser = () => {
       {/* Sample SMS Formats */}
       <Card>
         <CardHeader>
-          <CardTitle>Sample SMS Formats & Auto-Categorization</CardTitle>
+          <CardTitle>Custom SMS Format & Examples</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div>
-            <p className="font-medium text-sm mb-1">Official (OL keyword):</p>
-            <code className="text-xs bg-gray-100 p-2 rounded block">
-              You paid ₹500 to Swiggy OL food delivery using Google Pay. UPI transaction ID 123456789 on 15-Sep-24.
-            </code>
+        <CardContent className="space-y-4">
+          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <h4 className="font-semibold text-green-800 mb-2">✨ New Structured Format (Recommended)</h4>
+            <p className="text-sm text-green-700 mb-3">
+              <strong>Format:</strong> <code className="bg-white px-2 py-1 rounded">KEYWORD AMOUNT MERCHANT DESCRIPTION</code>
+            </p>
+            <div className="space-y-2">
+              <div>
+                <p className="font-medium text-sm mb-1 text-green-800">Official Expense:</p>
+                <code className="text-xs bg-white p-2 rounded block">
+                  OL 500 Swiggy office lunch delivery for team meeting
+                </code>
+              </div>
+              <div>
+                <p className="font-medium text-sm mb-1 text-green-800">Personal Expense:</p>
+                <code className="text-xs bg-white p-2 rounded block">
+                  PL 1200 Amazon personal shopping for home items
+                </code>
+              </div>
+              <div>
+                <p className="font-medium text-sm mb-1 text-green-800">Savings Investment:</p>
+                <code className="text-xs bg-white p-2 rounded block">
+                  SV 5000 SBI Mutual Fund monthly SIP investment
+                </code>
+              </div>
+            </div>
           </div>
-          <div>
-            <p className="font-medium text-sm mb-1">Personal (PL keyword):</p>
-            <code className="text-xs bg-gray-100 p-2 rounded block">
-              You have successfully paid Rs.250 to Netflix PL entertainment via PhonePe. Txn ID: PE12345 on 15-Sep-24.
-            </code>
+
+          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <h4 className="font-semibold text-blue-800 mb-2">📱 Legacy SMS Support (GPay/PhonePe)</h4>
+            <div className="space-y-2">
+              <div>
+                <p className="font-medium text-sm mb-1 text-blue-800">GPay Format:</p>
+                <code className="text-xs bg-white p-2 rounded block">
+                  You paid ₹500 to Swiggy using Google Pay. UPI transaction ID 123456789 on 15-Sep-24.
+                </code>
+              </div>
+              <div>
+                <p className="font-medium text-sm mb-1 text-blue-800">PhonePe Format:</p>
+                <code className="text-xs bg-white p-2 rounded block">
+                  You have successfully paid Rs.250 to Netflix via PhonePe. Txn ID: PE12345 on 15-Sep-24.
+                </code>
+              </div>
+            </div>
           </div>
-          <div>
-            <p className="font-medium text-sm mb-1">Savings (SV keyword):</p>
-            <code className="text-xs bg-gray-100 p-2 rounded block">
-              You paid ₹5000 to SBI SV Mutual Fund SIP using Google Pay. UPI transaction ID 111222333 on 17-Sep-24.
-            </code>
-          </div>
-          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>Auto-Categorization:</strong> Add <code className="bg-white px-1 rounded">OL</code>, <code className="bg-white px-1 rounded">PL</code>, or <code className="bg-white px-1 rounded">SV</code> keywords in merchant/description for automatic categorization into Official, Personal, or Savings respectively.
+
+          <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-sm text-amber-800">
+              <strong>💡 Pro Tip:</strong> Use the structured format <code className="bg-white px-1 rounded">OL/PL/SV AMOUNT MERCHANT DESCRIPTION</code> for better accuracy and detailed transaction descriptions!
             </p>
           </div>
         </CardContent>
