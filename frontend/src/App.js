@@ -566,10 +566,10 @@ const Dashboard = () => {
                       </p>
                     )}
                     <p className="text-xs text-gray-500">
-                      {new Date(transaction.transaction_date).toLocaleDateString('en-US', {
-                        month: 'short',
+                      {new Date(transaction.transaction_date).toLocaleDateString('en-GB', {
                         day: 'numeric',
-                        year: new Date(transaction.transaction_date).getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+                        month: 'short',
+                        year: 'numeric'
                       })}
                     </p>
                   </div>
