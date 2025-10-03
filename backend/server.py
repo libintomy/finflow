@@ -128,8 +128,44 @@ class SMSParser:
         return CategoryType.PERSONAL
     
     @staticmethod
+    def parse_custom_format(sms_text: str) -> Optional[Dict]:
+        """Parse custom SMS format: [KEYWORD] [AMOUNT] [MERCHANT] [DESCRIPTION]"""
+        # Pattern: KEYWORD AMOUNT MERCHANT DESCRIPTION
+        # Examples: 
+        # "OL 500 Swiggy office lunch delivery"
+        # "PL 1200 Amazon personal shopping"
+        # "SV 5000 SBI Mutual Fund monthly SIP"
+        
+        pattern = r'^(OL|PL|SV)\s+(\d+(?:\.\d{1,2})?)\s+([^\s]+(?:\s+[^\s]+)*?)\s+(.+)$'
+        match = re.match(pattern, sms_text.strip(), re.IGNORECASE)
+        
+        if match:
+            keyword = match.group(1).upper()
+            amount = float(match.group(2))
+            merchant = match.group(3).strip()
+            description = match.group(4).strip()
+            
+            # Determine category based on keyword
+            category_map = {
+                'OL': CategoryType.OFFICIAL,
+                'PL': CategoryType.PERSONAL,
+                'SV': CategoryType.SAVINGS
+            }
+            
+            return {
+                'amount': amount,
+                'merchant': merchant,
+                'description': description,
+                'transaction_type': TransactionType.DEBIT,  # Default to debit (expense)
+                'category': category_map[keyword],
+                'payment_method': PaymentMethod.MANUAL,  # Custom format treated as manual
+                'sms_text': sms_text
+            }
+        return None
+    
+    @staticmethod
     def parse_gpay_sms(sms_text: str) -> Optional[Dict]:
-        """Parse GPay SMS format"""
+        """Parse GPay SMS format (legacy support)"""
         patterns = [
             # GPay sent money pattern
             r'You sent ₹([\d,]+\.?\d*) to (.+?) via Google Pay UPI ID: (.+?) on (.+?)\.',
@@ -162,7 +198,7 @@ class SMSParser:
     
     @staticmethod
     def parse_phonepe_sms(sms_text: str) -> Optional[Dict]:
-        """Parse PhonePe SMS format"""
+        """Parse PhonePe SMS format (legacy support)"""
         patterns = [
             # PhonePe payment pattern
             r'You have successfully paid Rs\.([\d,]+\.?\d*) to (.+?) via PhonePe\. Txn ID: (.+?) on (.+?)\.',
